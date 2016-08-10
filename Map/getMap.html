@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Trainer Map</title>
+</head>
+<body>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+        }
+        #debug {
+            height:125px;
+            display:none;
+        }
+        .map-canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <div id="debug">
+
+    </div>
+    <div id="map-canvas" class="map-canvas">
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script type="text/javascript">
+        var map;
+        var CDAM_marker;
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        function initialize() {
+            var lat = getParameterByName('lat').replace(',','.') || '52.831232142';
+            var lng = getParameterByName('long').replace(',', '.') || '4.634342343';
+            var rad = getParameterByName('radius');
+            setDebug("Initial location:" + lat + lng);
+            var CDAM_Latlng = new google.maps.LatLng(lat, lng);
+            var CDAM_mapOptions = {
+                zoom: 18,
+                center: CDAM_Latlng
+            }
+            map = new google.maps.Map(document.getElementById('map-canvas'), CDAM_mapOptions);
+            google.maps.event.trigger(map, 'resize');
+            CDAM_marker = new google.maps.Marker({
+                animation: google.maps.Animation.DROP,
+                position: CDAM_Latlng,
+                map: map,
+                title: 'Ash',
+                icon: "ash.png"
+            });
+
+            CDAM_marker.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+
+            if (rad) {
+                setDebug("rad"+ rad)
+                rad = parseInt(rad);
+                setDebug("rad" + rad)
+                var cityCircle = new google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.05,
+                    map: map,
+                    center: CDAM_Latlng,
+                    radius: rad
+                });
+                setDebug("Created city circle" + rad)
+            }
+
+        }
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+        function updateMarker(lat, lng) {
+            if (CDAM_marker && map) {
+                CDAM_marker.setPosition(new google.maps.LatLng(lat, lng));
+                map.setCenter(new google.maps.LatLng(lat, lng));
+            }
+        }
+        function setDebug(text) {
+            document.getElementById("debug").innerHTML = text + '<br>' + document.getElementById("debug").innerHTML;
+        }
+		var stops = {};
+		function plotFort(id, lng, lat, name, type, extra) {
+		    try{
+		        if (map && !stops[id]) {
+		            //== C# webbrowser uses IE7 compat by default, so we cannot use JSON.parse
+		            //setDebug('plotFort("' + id + '","' + lat + '","' + lng + '","' + name + '","' + type + '","' + extra + '");');
+		            eval('var settings = ' + extra);
+		            //setDebug('Setting marker' + settings.marker + lat + lng);
+		            stops[id] = new google.maps.Marker({
+		                animation: google.maps.Animation.DROP,
+		                position: new google.maps.LatLng(lat.replace(',','.'), lng.replace(',','.')),
+		                map: map,
+		                title: type + ': ' + id,
+		                icon: settings.marker || "fort.png"
+		            });
+		            var infowindow = new google.maps.InfoWindow({
+		                content: '<h2>'+type + ' - ' + id + '</h2><br>' + ((extra.GuardPokemonId) ? "Guarded by "+extra.GuardPokemonId : "")
+		            });
+		            stops[id].addListener('click', function () {
+		                infowindow.open(map, stops[id]);
+		            });
+		            //setDebug('Setted marker' + settings.marker + lat + lng + id + type);
+		        }
+		    }
+		    catch (error) {
+		        setDebug(error);
+		        setDebug(error.message + error.stack);
+		    }
+		}
+    </script>
+</body>
+</html>
