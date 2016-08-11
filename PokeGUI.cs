@@ -1,12 +1,14 @@
 ﻿using ComponentFactory.Krypton.Navigator;
 using ComponentFactory.Krypton.Toolkit;
 using ComponentFactory.Krypton.Workspace;
+using Microsoft.Win32;
 using PoGo.NecroBot.Logic;
 using PoGo.NecroBot.Logic.Common;
 using PoGo.NecroBot.Logic.Event;
 using PoGo.NecroBot.Logic.Logging;
 using PoGo.NecroBot.Logic.PoGoUtils;
 using PoGo.NecroBot.Logic.State;
+using PoGo.NecroBot.Logic.Tasks;
 using PoGo.NecroBot.Logic.Utils;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
@@ -27,7 +29,6 @@ namespace PoGo.NecroBot.GUI
         private bool mapLoaded;
         private Session _session;
         private ListViewColumnSorter lvwColumnSorter;
-        private SynchronizationContext synchronizationContext;
         private int pokemonCaught;
         private int pokestopsVisited;
 
@@ -49,8 +50,30 @@ namespace PoGo.NecroBot.GUI
             workspaceDashboard.ShowMaximizeButton = true;
             lvwColumnSorter = new ListViewColumnSorter();
             this.listPokemon.ListViewItemSorter = lvwColumnSorter;
-
+            this.listPokemonStats.Items.Clear();
+            fixWebMap();
         }
+
+        private void fixWebMap() {
+            try {
+                RegistryKey localMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                var reg32 = localMachine.OpenSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true);
+                var reg64 = localMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true);
+
+                if (reg32.GetValue("PoGo.NecroBot.GUI.exe") == null)
+                {
+                    reg32.SetValue("PoGo.NecroBot.GUI.exe", 10000);
+                }
+                if (reg64.GetValue("PoGo.NecroBot.GUI.exe") == null)
+                {
+                    reg64.SetValue("PoGo.NecroBot.GUI.exe", 10000);
+                }
+            }
+            catch (Exception ex) {
+                Logger.Write("Unable to add registry key: " + ex.Message, LogLevel.Error);
+            }
+        }
+
         private void workspaceDashboard_WorkspaceCellAdding(object sender, WorkspaceCellEventArgs e)
         {
             e.Cell.NavigatorMode = NavigatorMode.BarRibbonTabGroup;
@@ -129,16 +152,12 @@ namespace PoGo.NecroBot.GUI
 
         private void SetText(string text)
         {
-            if (this.textLog.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { text });
-            }
-            else
-            {
+            this.UIThread(() => {
                 this.textLog.AppendText(text);
                 this.textLog.AppendText(Environment.NewLine);
-            }
+                this.textLog.SelectionStart = this.textLog.Text.Length;
+                this.textLog.ScrollToCaret();
+            });
         }
 
         private void setLocation(double lang, double lat)
@@ -179,15 +198,14 @@ namespace PoGo.NecroBot.GUI
                     objArray[4] = (Object)type;
                     objArray[5] = (Object)extra;
                     this.webMap.Document.InvokeScript("plotFort", objArray);
-                    Logger.Write($"Fortadded: {id}, {lat},{lng}, {type}, {name}, {extra}");
                 }
             }
         }
 
         private void setLogger() {
             Write writes = (string message, LogLevel level, ConsoleColor color) => {
-                this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}");
-                 if (level == LogLevel.Pokestop)
+
+                if (level == LogLevel.Pokestop)
                 {
                     if (message.Contains("Arriving"))
                     {
@@ -213,17 +231,19 @@ namespace PoGo.NecroBot.GUI
                 }
                 else if (level == LogLevel.Info && message.Contains("Playing"))
                 {
-                   this.onceLoaded();
+                    this.onceLoaded();
                 }
                 else if (level == LogLevel.Info && message.Contains("Amount of Pokemon Caught"))
                 {
                     Regex regex = new Regex(@"Caught:");
-                    this.UIThread(()=> labelPokemonAmount.TextLine2 = regex.Split(message)[1] );
+                    this.UIThread(() => labelPokemonAmount.TextLine2 = regex.Split(message)[1]);
+                }
+                else {
+                    this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}");
                 }
             };
             Logger.SetLogger(new EventLogger(LogLevel.Info, writes), "");
         }
-
 
         private void startUp()
         {
@@ -287,8 +307,20 @@ namespace PoGo.NecroBot.GUI
             machine.AsyncStart(new VersionCheckState(), session);
 
             string filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
-            this.webMap.Url = new Uri(filename);
             this.webMap.ScriptErrorsSuppressed = true;
+            this.webMap.Url = new Uri(filename);
+            
+            if (settings.UseTelegramAPI)
+            {
+                session.Telegram = new Logic.Service.TelegramService(settings.TelegramAPIKey, session);
+            }
+
+            if (session.LogicSettings.UseSnipeLocationServer)
+            {
+                SnipePokemonTask.AsyncStart(session);
+                //CancellationToken cancellationToken = new CancellationToken();
+                //SnipePokemonTask.Execute(session, cancellationToken);
+            }
 
             columnExtra.Width = 0;
             systemId.Width = 0;
@@ -304,6 +336,7 @@ namespace PoGo.NecroBot.GUI
         private void webMap_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             this.mapLoaded = true;
+            this.webMap.ScriptErrorsSuppressed = true;
         }
 
         private async void runUpdate()
@@ -349,14 +382,16 @@ namespace PoGo.NecroBot.GUI
 
         public void updateIncubator(string id, string kmRemaining) {
             this.UIThread(() => {
-                var item = listEggs.Items.Find(id, false).First();
-                if (item != null)
+                if (listEggs.Items.Count > 0)
                 {
-                    Logger.Write("Updating egg " + id + " - " + kmRemaining);
-                    item.Text = kmRemaining + "km /" + item.Text.Split('/')[1];
-                }
-                else {
-                    Logger.Write("Unable to find egg ass. with incubator " + id);
+                    var item = listEggs.Items.Find(id, false).First();
+                    if (item != null)
+                    {
+                        item.Text = kmRemaining + "km /" + item.Text.Split('/')[1];
+                    }
+                    else {
+                        Logger.Write("Unable to find egg ass. with incubator " + id);
+                    }
                 }
             });
         }
@@ -391,6 +426,7 @@ namespace PoGo.NecroBot.GUI
             var pokemonFamilies = myPokemonFamilies.ToArray();
             var pokemonPairedWithStatsCp = items.Select(pokemon => Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon))).ToList();
 
+            bool[] pokemonsIHave = new bool[152];
             ListViewItem[] lvis = new ListViewItem[items.Count()];
             int index = 0;
             foreach (var item in pokemonPairedWithStatsCp)
@@ -420,13 +456,31 @@ namespace PoGo.NecroBot.GUI
                     thisCandies = $"{familyCandy.Candy_} / {settings.CandyToEvolve}";
                 }
 
-                string[] row = { ((int)(item.Item1.PokemonId)).ToString(), thisName, cpInfo, item.Item2.ToString("F0"), cpPrcnt, item.Item3.ToString("F0") + "%", item.Item4.ToString(), canEvolve, thisCandies, $"", item.Item1.Id.ToString() };
+                string extra = $"";
+                string isFavorite = item.Item1.Favorite == 1 ? "Yes" : "";
+                var timeSpan = this.FromUnixTime(item.Item1.CreationTimeMs / 1000);
+                var localDateTime = timeSpan.ToString("yyyy-MM-dd HH:mm:ss");
+                string[] row = {thisName, ((int)(item.Item1.PokemonId)).ToString(), cpInfo, item.Item2.ToString("F0"), cpPrcnt, item.Item3.ToString("F0") + "%", item.Item4.ToString(), canEvolve, thisCandies, extra, item.Item1.Id.ToString(), item.Item1.Move1.ToString(), item.Item1.Move2.ToString(), localDateTime,
+                            $"{item.Item1.HeightM:0.00}m", $"{item.Item1.WeightKg:0.00}kg", $"{item.Item1.Stamina}/{item.Item1.StaminaMax}", item.Item1.NumUpgrades.ToString(), item.Item1.IndividualAttack.ToString(), item.Item1.IndividualDefense.ToString(), item.Item1.IndividualStamina.ToString(), isFavorite, item.Item1.BattlesAttacked.ToString(),item.Item1.BattlesDefended.ToString(),item.Item1.DeployedFortId  };
                 ListViewItem thisOne = new ListViewItem(row);
+                thisOne.ImageIndex = (int)(item.Item1.PokemonId);
+                pokemonsIHave[(int)(item.Item1.PokemonId)] = true;
                 lvis[index] = thisOne;
                 index++;
             }
             Logger.Write($"Adding {lvis.Count()} to list");
             this.SetList(listPokemon, lvis);
+
+            this.UIThread(()=> {
+                this.listPokemonStats.Clear();
+                for (int i = 1; i < 152; i++) {
+                    if (pokemonsIHave[i] != true) {
+                        ListViewItem thisOne = new ListViewItem(((POGOProtos.Enums.PokemonId)i).ToString());
+                        thisOne.ImageIndex = i;
+                        listPokemonStats.Items.Add(thisOne);
+                    }
+                }
+            });
 
 
             var pokemonToEvolveTask = await this._session.Inventory.GetPokemonToEvolve(this._session.LogicSettings.PokemonsToEvolve);
@@ -434,6 +488,11 @@ namespace PoGo.NecroBot.GUI
             Logger.Write($"Pokemons to evolve = {pokemonToEvolve.Count}");
         }
 
+        public DateTime FromUnixTime(ulong unixTime)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddSeconds(unixTime);
+        }
         private async Task getInventory()
         {
             var items = await this._session.Inventory.GetItems();
@@ -449,7 +508,6 @@ namespace PoGo.NecroBot.GUI
                     lvis[index] = thisOne;
                     index++;
                 }
-                Logger.Write($"Adding {lvis.Count()} to list");
                 this.SetList(listInv, lvis);
             }
             catch (Exception e)
@@ -473,7 +531,6 @@ namespace PoGo.NecroBot.GUI
 
         private void refreshInventoryAndPokemonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Logger.Write("Refresh overview", LogLevel.Info);
             Task task = new Task(runUpdate);
             task.Start();
         }
@@ -509,13 +566,26 @@ namespace PoGo.NecroBot.GUI
             if (listPokemon.SelectedItems.Count == 1)
             {
                 ListViewItem selected = listPokemon.SelectedItems[0];
-                string name = selected.SubItems[1].Text;
+                string name = selected.SubItems[0].Text;
                 ulong id = ulong.Parse(selected.SubItems[10].Text);
                 DialogResult result = MessageBox.Show($"Do you want to evolve {name}?", $"Evolving {name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == System.Windows.Forms.DialogResult.Yes)
                 {
                     this.evolvePokemon(id);
 
+                }
+            }
+            else {
+                var approx = ((this._session.LogicSettings.DelayBetweenPlayerActions + 1) * listPokemon.SelectedItems.Count) / 1000;
+                DialogResult result = MessageBox.Show($"Do you want to evolve {listPokemon.SelectedItems.Count} pokemon? \nThis wil take approx {approx} seconds. Please wait patiently.", $"Evolving multiple pokemon", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    ulong[] evolveList = new ulong[listPokemon.SelectedItems.Count];
+                    for (int i = 0; i < listPokemon.SelectedItems.Count; i++)
+                    {
+                        evolveList[i] = ulong.Parse(listPokemon.SelectedItems[i].SubItems[10].Text);
+                    }
+                    this.evolveMultiple(evolveList);
                 }
             }
         }
@@ -525,13 +595,24 @@ namespace PoGo.NecroBot.GUI
             if (listPokemon.SelectedItems.Count == 1)
             {
                 ListViewItem selected = listPokemon.SelectedItems[0];
-                string name = selected.SubItems[1].Text;
+                string name = selected.SubItems[0].Text;
                 ulong id = ulong.Parse(selected.SubItems[10].Text);
                 DialogResult result = MessageBox.Show($"Do you want to transfer {name}?", $"Transferring {name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    this.transfer(id);
+                }
+            }
+            else {
+                var approx = ((this._session.LogicSettings.DelayBetweenPlayerActions + 1) * listPokemon.SelectedItems.Count) / 1000;
+                DialogResult result = MessageBox.Show($"Do you want to transfer {listPokemon.SelectedItems.Count} pokemon? \nThis wil take approx {approx} seconds. Please wait patiently.", $"Transferring multiple pokemon", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == System.Windows.Forms.DialogResult.Yes)
                 {
-                    Logger.Write("Yes!");
-                    this.transfer(id);
+                    ulong[] transferList = new ulong[listPokemon.SelectedItems.Count];
+                    for (int i = 0; i < listPokemon.SelectedItems.Count; i++) {
+                        transferList[i] = ulong.Parse(listPokemon.SelectedItems[i].SubItems[10].Text);
+                    }
+                    this.transferMultiple(transferList);
                 }
             }
         }
@@ -541,40 +622,67 @@ namespace PoGo.NecroBot.GUI
             if (listPokemon.SelectedItems.Count == 1)
             {
                 ListViewItem selected = listPokemon.SelectedItems[0];
-                string name = selected.SubItems[1].Text;
+                string name = selected.SubItems[0].Text;
                 ulong id = ulong.Parse(selected.SubItems[10].Text);
-                DialogResult result = MessageBox.Show($"Do you want to power up {name}?", $"Powe up {name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result = MessageBox.Show($"Do you want to power up {name}?", $"Power up {name}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    Logger.Write("Yes!");
                     this.powerUp(id);
                 }
             }
+            else {
+                MessageBox.Show($"Unable to powerup multiple pokemon at the same time", $"Sorry...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
-        private async void transfer(ulong id)
+        private async void transfer(ulong id, bool runUpdate = true)
         {
             ReleasePokemonResponse rps = await this._session.Client.Inventory.TransferPokemon(id);
             MessageBox.Show($"Transfer result: {rps.Result}\nCandies retrieved: {rps.CandyAwarded.ToString()}", "Transfer result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.runUpdate();
+            if (runUpdate) { await this.getPokemons(); }
+            
         }
 
-        private async void evolvePokemon(ulong id)
+        private async void transferMultiple(ulong[] ids)
+        {
+            foreach (ulong id in ids) {
+                ReleasePokemonResponse rps = await this._session.Client.Inventory.TransferPokemon(id);
+                Logger.Write($"Transfer result: {rps.Result} - Candies retrieved: {rps.CandyAwarded.ToString()} id: {id.ToString()}", LogLevel.Transfer);
+                Logger.Write($"Transfer result: {rps.Result} - Candies retrieved: {rps.CandyAwarded.ToString()} id: {id.ToString()}");
+                DelayingUtils.Delay(this._session.LogicSettings.DelayBetweenPlayerActions, 0);
+            }
+            await this.getPokemons();
+            Logger.Write($"Transfer of {ids.Length} pokemons completed");
+        }
+
+        private async void evolveMultiple(ulong[] ids)
+        {
+            foreach (ulong id in ids)
+            {
+                EvolvePokemonResponse eps = await this._session.Client.Inventory.EvolvePokemon(id);
+                Logger.Write($"Evolve result: {eps.EvolvedPokemonData.PokemonId} CP: {eps.EvolvedPokemonData.Cp} XP: {eps.ExperienceAwarded.ToString()} id: {id.ToString()}", LogLevel.Evolve);
+                Logger.Write($"Evolve result: {eps.EvolvedPokemonData.PokemonId} CP: {eps.EvolvedPokemonData.Cp} XP: {eps.ExperienceAwarded.ToString()} id: {id.ToString()}");
+                DelayingUtils.Delay(this._session.LogicSettings.DelayBetweenPlayerActions, 0);
+            }
+            await this.getPokemons();
+            Logger.Write($"Evolving of {ids.Length} pokemons completed");
+        }
+
+        private async void evolvePokemon(ulong id, bool runUpdate = true)
         {
             EvolvePokemonResponse eps = await this._session.Client.Inventory.EvolvePokemon(id);
             MessageBox.Show($"Evolve result: {eps.EvolvedPokemonData.PokemonId} CP: {eps.EvolvedPokemonData.Cp}\nXP: {eps.ExperienceAwarded.ToString()}", "Evolve result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.runUpdate();
+            if (runUpdate) { await this.getPokemons(); }
         }
 
-        private async void powerUp(ulong id)
+        private async void powerUp(ulong id, bool runUpdate = true)
         {
             UpgradePokemonResponse ups = await this._session.Client.Inventory.UpgradePokemon(id);
             MessageBox.Show($"PowerUp result: {ups.Result}\nCP: {ups.UpgradedPokemon.Cp}", $"PowerUp result for {ups.UpgradedPokemon.PokemonId.ToString()}", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.runUpdate();
+            if (runUpdate) { await this.getPokemons(); }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            Logger.Write("Refresh overview", LogLevel.Info);
             Task task = new Task(runUpdate);
             task.Start();
         }
@@ -587,6 +695,18 @@ namespace PoGo.NecroBot.GUI
         private void kryptonRibbonGroup5_DialogBoxLauncherClick(object sender, EventArgs e)
         {
 
+        }
+
+        private void snipeButton_Click(object sender, EventArgs e)
+        {
+            SnipePokemonTask.AsyncStart(this._session);
+           
+        }
+
+        private void snipeButton2_Click(object sender, EventArgs e)
+        {
+            CancellationToken cancellationToken = new CancellationToken();
+            SnipePokemonTask.Execute(this._session, cancellationToken);
         }
     }
 

@@ -111,12 +111,12 @@ public class ListViewColumnSorter : IComparer
     {
 
         private List<string> _strings;
-        private List<int> _numbers;
+        private List<ulong> _numbers;
 
         public StringNum(string value)
         {
             _strings = new List<string>();
-            _numbers = new List<int>();
+            _numbers = new List<ulong>();
             int pos = 0;
             bool number = false;
             while (pos < value.Length)
@@ -128,7 +128,7 @@ public class ListViewColumnSorter : IComparer
                 }
                 if (number)
                 {
-                    _numbers.Add(int.Parse(value.Substring(pos, len)));
+                    _numbers.Add(ulong.Parse(value.Substring(pos, len)));
                 }
                 else {
                     _strings.Add(value.Substring(pos, len));

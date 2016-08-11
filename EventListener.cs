@@ -217,7 +217,7 @@ namespace PoGo.NecroBot.GUI
         private void HandleEvent(SnipeScanEvent snipeScanEvent, ISession session)
         {
             Logger.Write(snipeScanEvent.PokemonId == PokemonId.Missingno
-                ? session.Translation.GetTranslation(TranslationString.SnipeScan,
+                ? ((snipeScanEvent.Source != null) ? "(" + snipeScanEvent.Source + ") " : null) + session.Translation.GetTranslation(TranslationString.SnipeScan,
                     $"{snipeScanEvent.Bounds.Latitude},{snipeScanEvent.Bounds.Longitude}")
                 : ((snipeScanEvent.Source != null) ? "(" + snipeScanEvent.Source + ") " : null) + session.Translation.GetTranslation(TranslationString.SnipeScanEx, session.Translation.GetPokemonTranslation(snipeScanEvent.PokemonId),
                     snipeScanEvent.Iv > 0 ? snipeScanEvent.Iv.ToString(CultureInfo.InvariantCulture) : session.Translation.GetTranslation(TranslationString.CommonWordUnknown),
