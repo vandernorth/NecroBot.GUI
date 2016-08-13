@@ -108,6 +108,7 @@ namespace PoGo.NecroBot.GUI
         {
             int intTimeForArrival = (int)(fortTargetEvent.Distance / (session.LogicSettings.WalkingSpeedInKilometerPerHour * 0.2777));
             this.gui.SetControlText($"Next stop: {fortTargetEvent.Name} - {Math.Round(fortTargetEvent.Distance)}m - {intTimeForArrival} seconds", this.gui.labelNext);
+            Logger.Write($"Next stop: {fortTargetEvent.Name} - {Math.Round(fortTargetEvent.Distance)}m - {intTimeForArrival} seconds", LogLevel.Pokestop);
         }
 
         private void HandleEvent(PokemonCaptureEvent pokemonCaptureEvent, ISession session)

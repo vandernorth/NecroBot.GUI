@@ -30,6 +30,18 @@
     </div>
     <div id="map-canvas" class="map-canvas">
     </div>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82431952-1', {
+      'cookieDomain': 'none'
+  });
+  ga('send', 'pageview');
+
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script type="text/javascript">
         var map;
@@ -47,8 +59,9 @@
         }
 
         function loc(lat, long) {
-            lat = lat.replace(',', '.');
-            long = long.replace(',', '.');
+            
+            lat = typeof lat == 'string' ? lat.replace(',', '.') : lat;
+            long = typeof long =='string' ? long.replace(',', '.') : long;
             return new google.maps.LatLng(lat, long);
         }
 

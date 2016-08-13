@@ -234,9 +234,8 @@ namespace PoGo.NecroBot.GUI
                     Regex regex = new Regex(@"Caught:");
                     this.UIThread(() => labelPokemonAmount.TextLine2 = regex.Split(message)[1]);
                 }
-                else {
-                    this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}", color);
-                }
+
+                this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}", color);
             };
             Logger.SetLogger(new EventLogger(LogLevel.Info, writes), "");
         }
@@ -329,7 +328,7 @@ namespace PoGo.NecroBot.GUI
             machine.AsyncStart(new VersionCheckState(), session);
 
             string filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
-            this.webMap.ScriptErrorsSuppressed = true;
+            this.webMap.ScriptErrorsSuppressed = false;
             this.webMap.Url = new Uri(filename);
             
             if (settings.UseTelegramAPI)
