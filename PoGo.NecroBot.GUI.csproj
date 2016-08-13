@@ -32,13 +32,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C5">
-      <HintPath>PokemonGoLibs\C5.dll</HintPath>
-    </Reference>
-    <Reference Include="CloudFlareUtilities">
-      <HintPath>PokemonGoLibs\CloudFlareUtilities.dll</HintPath>
-    </Reference>
     <Reference Include="ComponentFactory.Krypton.Design">
       <HintPath>KryptonComponents\ComponentFactory.Krypton.Design.dll</HintPath>
     </Reference>
@@ -57,53 +54,12 @@
     <Reference Include="ComponentFactory.Krypton.Workspace">
       <HintPath>KryptonComponents\ComponentFactory.Krypton.Workspace.dll</HintPath>
     </Reference>
-    <Reference Include="EngineIoClientDotNet">
-      <HintPath>PokemonGoLibs\EngineIoClientDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="GeoCoordinatePortable">
-      <HintPath>PokemonGoLibs\GeoCoordinatePortable.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf">
+    <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>PokemonGoLibs\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="GPSOAuthSharp">
-      <HintPath>PokemonGoLibs\GPSOAuthSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>PokemonGoLibs\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>PokemonGoLibs\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PoGo.NecroBot.Logic">
-      <HintPath>PokemonGoLibs\PoGo.NecroBot.Logic.dll</HintPath>
-    </Reference>
-    <Reference Include="POGOProtos">
-      <HintPath>PokemonGoLibs\POGOProtos.dll</HintPath>
-    </Reference>
-    <Reference Include="Pokemon.Go.Rocket.API">
-      <HintPath>PokemonGoLibs\Pokemon.Go.Rocket.API.dll</HintPath>
-    </Reference>
-    <Reference Include="S2Geometry">
-      <HintPath>PokemonGoLibs\S2Geometry.dll</HintPath>
-    </Reference>
-    <Reference Include="SocketIoClientDotNet">
-      <HintPath>PokemonGoLibs\SocketIoClientDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.Common">
-      <HintPath>PokemonGoLibs\SuperSocket.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.Facility">
-      <HintPath>PokemonGoLibs\SuperSocket.Facility.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.SocketBase">
-      <HintPath>PokemonGoLibs\SuperSocket.SocketBase.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.SocketEngine">
-      <HintPath>PokemonGoLibs\SuperSocket.SocketEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="SuperSocket.WebSocket">
-      <HintPath>PokemonGoLibs\SuperSocket.WebSocket.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -130,9 +86,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="Telegram.Bot">
       <HintPath>PokemonGoLibs\Telegram.Bot.dll</HintPath>
-    </Reference>
-    <Reference Include="WebSocket4Net">
-      <HintPath>PokemonGoLibs\WebSocket4Net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +183,9 @@
     <Content Include="Map\getMap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Map\snipe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="PokemonGoLibs\CloudFlareUtilities.dll" />
     <Content Include="PokemonGoLibs\EngineIoClientDotNet.dll" />
     <Content Include="PokemonGoLibs\Google.Protobuf.dll" />
@@ -248,6 +204,24 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Screenshots\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NecroBot\feroxRev\PokemonGo.RocketAPI\PokemonGo.RocketAPI.csproj">
+      <Project>{05d2da44-1b8e-4cf7-94ed-4d52451cd095}</Project>
+      <Name>PokemonGo.RocketAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NecroBot\PoGo.NecroBot.CLI\PoGo.NecroBot.CLI.csproj">
+      <Project>{1fea147e-f704-497b-a538-00b053b5f672}</Project>
+      <Name>PoGo.NecroBot.CLI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NecroBot\PoGo.NecroBot.Logic\PoGo.NecroBot.Logic.csproj">
+      <Project>{0739e40d-c589-4aeb-93e5-ee8cd6773c60}</Project>
+      <Name>PoGo.NecroBot.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NecroBot\POGOProtos\POGOProtos\POGOProtos.csproj">
+      <Project>{a03a7bb2-4f0b-467b-84b2-9a76e6aae6fb}</Project>
+      <Name>POGOProtos</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

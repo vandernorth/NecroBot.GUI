@@ -14,7 +14,10 @@ using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
 using System;
 using System.Data;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,10 +34,12 @@ namespace PoGo.NecroBot.GUI
         private ListViewColumnSorter lvwColumnSorter;
         private int pokemonCaught;
         private int pokestopsVisited;
+        private bool debugUI;
 
         public PokeGUI()
         {
             this.mapLoaded = false;
+            this.debugUI = false;
             this.pokemonCaught = 0;
             this.pokestopsVisited = 0;
             InitializeComponent();
@@ -52,6 +57,13 @@ namespace PoGo.NecroBot.GUI
             this.listPokemon.ListViewItemSorter = lvwColumnSorter;
             this.listPokemonStats.Items.Clear();
             fixWebMap();
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+            this.Text = this.Text.Replace("{version}", version);
+            Assembly a = typeof(ClientSettings).Assembly;
+            this.Text = this.Text.Replace("{necrobotversion}", a.GetName().Version.ToString(3));
+            columnExtra.Width = 0;
+            systemId.Width = 0;
         }
 
         private void fixWebMap() {
@@ -81,12 +93,6 @@ namespace PoGo.NecroBot.GUI
             e.Cell.Button.ContextButtonDisplay = ButtonDisplay.Logic;
         }
 
-        delegate void SetTextCallback(string text);
-        delegate void SetTextControl(string text, Control control, bool keep = false, bool addTime = false, string modify = "Text");
-        delegate void SetLocationDelegate(double lang, double lat);
-        delegate void SetPokestopDelegate(string type, string id, string lng, string lat, string name, string extra);
-        delegate void SetListDelegate(ListView control, ListViewItem[] lvi);
-
         public void addPokemonCaught() {
             this.pokemonCaught++;
             this.updateStatusCounters();
@@ -107,13 +113,7 @@ namespace PoGo.NecroBot.GUI
 
         public void SetControlText(string text, Control control, bool keep = false, bool addTime = false, string modify = "Text")
         {
-            if (control.InvokeRequired)
-            {
-                SetTextControl d = new SetTextControl(SetControlText);
-                this.Invoke(d, new object[] { text, control, keep, addTime, modify });
-            }
-            else
-            {
+            this.UIThread(()=> {
                 if (addTime)
                 {
                     text = $"[{DateTime.Now.ToString("HH:mm:ss")}] {text}";
@@ -122,7 +122,8 @@ namespace PoGo.NecroBot.GUI
 
                 if (keep)
                 {
-                    if (control.Text == "..." || control.Text == ".") {
+                    if (control.Text == "..." || control.Text == ".")
+                    {
                         control.Text = "";
                     }
                     control.Text = text + "\n" + control.Text;
@@ -130,30 +131,24 @@ namespace PoGo.NecroBot.GUI
                 else {
                     control.GetType().GetProperty(modify).SetValue(control, text, null);
                 }
-            }
+            });
         }
 
         private void SetList(ListView control, ListViewItem[] lvi)
         {
-            if (control.InvokeRequired)
-            {
-                SetListDelegate d = new SetListDelegate(SetList);
-                this.Invoke(d, new object[] { control, lvi });
-            }
-            else
-            {
+            this.UIThread(()=> {
                 control.Items.Clear();
                 foreach (var item in lvi)
                 {
                     control.Items.Add(item);
                 }
-            }
+            });
         }
 
-        private void SetText(string text)
+        private void SetText(string text, Color color)
         {
             this.UIThread(() => {
-                this.textLog.AppendText(text);
+                this.textLog.AppendText(text, color);
                 this.textLog.AppendText(Environment.NewLine);
                 this.textLog.SelectionStart = this.textLog.Text.Length;
                 this.textLog.ScrollToCaret();
@@ -162,13 +157,7 @@ namespace PoGo.NecroBot.GUI
 
         private void setLocation(double lang, double lat)
         {
-            if (this.webMap.InvokeRequired)
-            {
-                SetLocationDelegate d = new SetLocationDelegate(setLocation);
-                this.Invoke(d, new object[] { lang, lat });
-            }
-            else
-            {
+            this.UIThread(() => {
                 if (this.webMap.Document != null && this.mapLoaded == true)
                 {
                     Object[] objArray = new Object[2];
@@ -176,18 +165,12 @@ namespace PoGo.NecroBot.GUI
                     objArray[1] = (Object)lang;
                     this.webMap.Document.InvokeScript("updateMarker", objArray);
                 }
-            }
+            });
         }
 
         private void setFort(string type, string id, string lng, string lat, string name, string extra)
         {
-            if (this.webMap.InvokeRequired)
-            {
-                SetPokestopDelegate d = new SetPokestopDelegate(setFort);
-                this.Invoke(d, new object[] { type, id, lng, lat, name, extra });
-            }
-            else
-            {
+            this.UIThread(() => {
                 if (this.webMap.Document != null && this.mapLoaded == true)
                 {
                     Object[] objArray = new Object[6];
@@ -199,11 +182,24 @@ namespace PoGo.NecroBot.GUI
                     objArray[5] = (Object)extra;
                     this.webMap.Document.InvokeScript("plotFort", objArray);
                 }
-            }
+            });
+        }
+
+        internal void setSniper(string lat, string lng)
+        {
+            this.UIThread(() => {
+                if (this.webMap.Document != null && this.mapLoaded == true)
+                {
+                    Object[] objArray = new Object[2];
+                    objArray[0] = (Object)lat;
+                    objArray[1] = (Object)lng;
+                    this.webMap.Document.InvokeScript("addSnipeCircle", objArray);
+                }
+            });
         }
 
         private void setLogger() {
-            Write writes = (string message, LogLevel level, ConsoleColor color) => {
+            Write writes = (string message, LogLevel level, Color color) => {
 
                 if (level == LogLevel.Pokestop)
                 {
@@ -239,7 +235,7 @@ namespace PoGo.NecroBot.GUI
                     this.UIThread(() => labelPokemonAmount.TextLine2 = regex.Split(message)[1]);
                 }
                 else {
-                    this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}");
+                    this.SetText($"[{DateTime.Now.ToString("HH:mm:ss")}] ({level.ToString()}) {message}", color);
                 }
             };
             Logger.SetLogger(new EventLogger(LogLevel.Info, writes), "");
@@ -253,9 +249,10 @@ namespace PoGo.NecroBot.GUI
             {
                 Logger.Write("This is your first start and the bot has generated the default config!", LogLevel.Warning);
                 Logger.Write("We will now shutdown to let you configure the bot and then launch it again.", LogLevel.Warning);
-                Thread.Sleep(2000);
-                Environment.Exit(0);
-                return;
+                var x = MessageBox.Show("This is your first start and the bot has generated the default config!\nWe will now shutdown to let you configure the bot and then launch it again.", "Config created", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                if (x == DialogResult.OK) {
+                    Environment.Exit(0);
+                }
             }
             else {
                 settings.TranslationLanguageCode = "en";
@@ -304,6 +301,31 @@ namespace PoGo.NecroBot.GUI
                 this.setLocation(lng, lat);
             };
 
+            var profilePath = Path.Combine(Directory.GetCurrentDirectory());
+            var workspaceFile = Path.Combine(profilePath, "workspace.xml");
+
+            if (File.Exists(workspaceFile))
+            {
+                Logger.Write("Found a workspace.xml file, loading...");
+                try
+                {
+                    workspaceDashboard.LoadLayoutFromFile(openFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Write("Unable to load workspace.xml. " + ex.Message, LogLevel.Error);
+                }
+
+            }
+            else {
+                Logger.Write("There is no workspace.xml in your root directory to load.");
+            }
+
+            if (this.debugUI)
+            {
+                return;
+            }
+
             machine.AsyncStart(new VersionCheckState(), session);
 
             string filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
@@ -322,9 +344,7 @@ namespace PoGo.NecroBot.GUI
                 //SnipePokemonTask.Execute(session, cancellationToken);
             }
 
-            columnExtra.Width = 0;
-            systemId.Width = 0;
-
+            settings.checkProxy(session.Translation);
         }
 
         private void onceLoaded()
@@ -426,7 +446,7 @@ namespace PoGo.NecroBot.GUI
             var pokemonFamilies = myPokemonFamilies.ToArray();
             var pokemonPairedWithStatsCp = items.Select(pokemon => Tuple.Create(pokemon, PokemonInfo.CalculateMaxCp(pokemon), PokemonInfo.CalculatePokemonPerfection(pokemon), PokemonInfo.GetLevel(pokemon))).ToList();
 
-            bool[] pokemonsIHave = new bool[152];
+            bool[] pokemonsIHave = new bool[151];
             ListViewItem[] lvis = new ListViewItem[items.Count()];
             int index = 0;
             foreach (var item in pokemonPairedWithStatsCp)
@@ -471,9 +491,12 @@ namespace PoGo.NecroBot.GUI
             Logger.Write($"Adding {lvis.Count()} to list");
             this.SetList(listPokemon, lvis);
 
+            pokemonsIHave[144] = true;
+            pokemonsIHave[145] = true;
+            pokemonsIHave[146] = true;
             this.UIThread(()=> {
                 this.listPokemonStats.Clear();
-                for (int i = 1; i < 152; i++) {
+                for (int i = 1; i < 149; i++) {
                     if (pokemonsIHave[i] != true) {
                         ListViewItem thisOne = new ListViewItem(((POGOProtos.Enums.PokemonId)i).ToString());
                         thisOne.ImageIndex = i;
@@ -708,6 +731,61 @@ namespace PoGo.NecroBot.GUI
             CancellationToken cancellationToken = new CancellationToken();
             SnipePokemonTask.Execute(this._session, cancellationToken);
         }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listPokemon.SelectedItems.Count == 1)
+            {
+                ListViewItem selected = listPokemon.SelectedItems[0];
+                string name = selected.SubItems[0].Text;
+                ulong id = ulong.Parse(selected.SubItems[10].Text);
+                string newName = Prompt.ShowDialog(String.Format("What do you want the new name for {0} want to be?", name), "Rename pokemon");
+                if (!String.IsNullOrEmpty(newName))
+                {
+                    this.rename(id, newName);
+                }
+                else {
+                    Logger.Write("New name was empty, not setting it!");
+                }
+            }
+            else {
+                MessageBox.Show($"Unable to rename multiple pokemon at the same time", $"Sorry...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            
+        }
+
+        private async void rename(ulong id, string newName)
+        {
+            await this._session.Client.Inventory.NicknamePokemon(id, newName);
+            await this.getPokemons();
+        }
+
+        private void addStatisticsPageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveWorkspace_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                workspaceDashboard.SaveLayoutToFile(saveFileDialog.FileName);
+        }
+
+        private void loadWorkspace_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    workspaceDashboard.LoadLayoutFromFile(openFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error Loading from File");
+                }
+            }
+        }
     }
 
     public static class KryptonFormExtension {
@@ -719,6 +797,44 @@ namespace PoGo.NecroBot.GUI
                 return;
             }
             code.Invoke();
+        }
+    }
+
+    public static class RichTextBoxExtensions
+    {
+        public static void AppendText(this RichTextBox box, string text, Color color)
+        {
+            box.SelectionStart = box.TextLength;
+            box.SelectionLength = 0;
+
+            box.SelectionColor = color;
+            box.AppendText(text);
+            box.SelectionColor = box.ForeColor;
+        }
+    }
+
+    public static class Prompt
+    {
+        public static string ShowDialog(string text, string caption)
+        {
+            Form prompt = new Form()
+            {
+                Width = 500,
+                Height = 150,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            Label textLabel = new Label() { Left = 50, Top = 20, Text = text, Width = 400 };
+            TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
         }
     }
 }

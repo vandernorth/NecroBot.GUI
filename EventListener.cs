@@ -222,6 +222,8 @@ namespace PoGo.NecroBot.GUI
                 : ((snipeScanEvent.Source != null) ? "(" + snipeScanEvent.Source + ") " : null) + session.Translation.GetTranslation(TranslationString.SnipeScanEx, session.Translation.GetPokemonTranslation(snipeScanEvent.PokemonId),
                     snipeScanEvent.Iv > 0 ? snipeScanEvent.Iv.ToString(CultureInfo.InvariantCulture) : session.Translation.GetTranslation(TranslationString.CommonWordUnknown),
                     $"{snipeScanEvent.Bounds.Latitude},{snipeScanEvent.Bounds.Longitude}"), LogLevel.Sniper);
+
+            this.gui.setSniper(snipeScanEvent.Bounds.Latitude.ToString(), snipeScanEvent.Bounds.Longitude.ToString());
         }
 
         private void HandleEvent(EvolveCountEvent evolveCountEvent, ISession session)
