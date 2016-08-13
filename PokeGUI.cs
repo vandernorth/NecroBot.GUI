@@ -327,8 +327,9 @@ namespace PoGo.NecroBot.GUI
 
             machine.AsyncStart(new VersionCheckState(), session);
 
-            string filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
-            this.webMap.ScriptErrorsSuppressed = false;
+            string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
+        
+            this.webMap.ScriptErrorsSuppressed = true;
             this.webMap.Url = new Uri(filename);
             
             if (settings.UseTelegramAPI)

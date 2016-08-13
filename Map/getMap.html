@@ -36,9 +36,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-82431952-1', {
-      'cookieDomain': 'none'
-  });
+  ga('create', 'UA-82431952-1', { 'cookieDomain': 'none' });
   ga('send', 'pageview');
 
     </script>
@@ -150,7 +148,6 @@
                 var add = frames[frame],
                     newLat = (lat+  (add[0]/1000)).toString(),
                     newLng = (lng + (add[1] / 1000)).toString();
-                console.log('New loc', lat, newLat, snipeMarker.position.lat(),' - ', lng, newLng,snipeMarker.position.lng());
                 snipeMarker.setPosition(loc(newLat, newLng));
                 frame++;
                 if (frame > frames.length - 1) {
