@@ -19,6 +19,8 @@ Screenshots below!
  - Nice workspace design which you can arrange the way you like (and then save)
 
 ## Screenshots
+![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen0.png "Screenshot")
+Screenshots below are from an older version:
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen1.png "Screenshot")
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen2.png "Screenshot")
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen3.png "Screenshot")
