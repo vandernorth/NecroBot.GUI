@@ -2,10 +2,21 @@
 GUI for the Pokemon Go - Necrobot
 
 ## Installation / Usage
- - Download the zip in the latest release https://github.com/vandernorth/NecroBot.GUI/releases/tag/v0.3.1
+ - Download the zip in the latest release https://github.com/vandernorth/NecroBot.GUI/releases/latest
  - Unzip everything
  - Change the auth.json and config.json to suit your needs
  - Run PoGo.NecroBot.GUI.exe
+
+Screenshots below!
+
+## Features
+ - All the original necrobot features (catching, sniping, visiting pokestops)
+ - Map of you location, all pokestops, gyms
+ - Sniping locations are shown on the map
+ - Neat list of all your pokemon with all their stats
+ - Transfer, evolve, powerup, rename the pokemon you want directly from the pokemon list
+ - View inventory, eggs, transfers, evolving pokemon.
+ - Nice workspace design which you can arrange the way you like (and then save)
 
 ## Screenshots
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen1.png "Screenshot")
