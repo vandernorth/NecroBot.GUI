@@ -167,7 +167,10 @@
         }
 
         function sendEvent(a, b, c, d) {
-            d = parseInt(d);
+            try {
+                d = parseInt(d);
+            }
+            catch (ex) { d = undefined; }
             ga('send', 'event', a, b, c, d);
         }
 

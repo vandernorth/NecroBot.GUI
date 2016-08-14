@@ -114,6 +114,8 @@
             this.itemName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.itemCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.itemMax = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextInventory = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.disposechooseAmountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.kryptonPage13 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.listEggs = new System.Windows.Forms.ListView();
             this.imagesEgg = new System.Windows.Forms.ImageList(this.components);
@@ -188,6 +190,8 @@
             this.kryptonRibbonGroup6 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple11 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.snipeButton = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.useIncenseButton = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.useLuckyEgg = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonTab5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.kryptonRibbonTab1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.kryptonRibbonGroup1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
@@ -227,6 +231,7 @@
             this.kryptonWorkspaceCell3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage10)).BeginInit();
             this.kryptonPage10.SuspendLayout();
+            this.contextInventory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage13)).BeginInit();
             this.kryptonPage13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell5)).BeginInit();
@@ -316,7 +321,7 @@
             this.workspaceDashboard.Root.UniqueName = "FA861B91B6D840B5ACA272DCFFDE0787";
             this.workspaceDashboard.Root.WorkspaceControl = this.workspaceDashboard;
             this.workspaceDashboard.ShowMaximizeButton = false;
-            this.workspaceDashboard.Size = new System.Drawing.Size(1596, 631);
+            this.workspaceDashboard.Size = new System.Drawing.Size(1588, 631);
             this.workspaceDashboard.TabIndex = 0;
             this.workspaceDashboard.TabStop = true;
             this.workspaceDashboard.WorkspaceCellAdding += new System.EventHandler<ComponentFactory.Krypton.Workspace.WorkspaceCellEventArgs>(this.workspaceDashboard_WorkspaceCellAdding);
@@ -745,7 +750,7 @@
             this.kryptonPage2.LastVisibleSet = true;
             this.kryptonPage2.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage2.Name = "kryptonPage2";
-            this.kryptonPage2.Size = new System.Drawing.Size(956, 273);
+            this.kryptonPage2.Size = new System.Drawing.Size(951, 273);
             this.kryptonPage2.Text = "Catches";
             this.kryptonPage2.ToolTipTitle = "Page ToolTip";
             this.kryptonPage2.UniqueName = "36DEF9070199420184970DD2108773F7";
@@ -769,7 +774,7 @@
             this.listCatches.GridLines = true;
             this.listCatches.Location = new System.Drawing.Point(0, 0);
             this.listCatches.Name = "listCatches";
-            this.listCatches.Size = new System.Drawing.Size(956, 273);
+            this.listCatches.Size = new System.Drawing.Size(951, 273);
             this.listCatches.TabIndex = 2;
             this.listCatches.UseCompatibleStateImageBehavior = false;
             this.listCatches.View = System.Windows.Forms.View.Details;
@@ -936,7 +941,7 @@
             this.kryptonPage4.LastVisibleSet = true;
             this.kryptonPage4.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage4.Name = "kryptonPage4";
-            this.kryptonPage4.Size = new System.Drawing.Size(633, 188);
+            this.kryptonPage4.Size = new System.Drawing.Size(630, 188);
             this.kryptonPage4.Text = "Pokestops";
             this.kryptonPage4.ToolTipTitle = "Page ToolTip";
             this.kryptonPage4.UniqueName = "DA3EF71AB201450F2F8D484D9058FAD9";
@@ -953,7 +958,7 @@
             this.listPokestops.GridLines = true;
             this.listPokestops.Location = new System.Drawing.Point(0, 0);
             this.listPokestops.Name = "listPokestops";
-            this.listPokestops.Size = new System.Drawing.Size(633, 188);
+            this.listPokestops.Size = new System.Drawing.Size(630, 188);
             this.listPokestops.TabIndex = 0;
             this.listPokestops.UseCompatibleStateImageBehavior = false;
             this.listPokestops.View = System.Windows.Forms.View.Details;
@@ -1005,7 +1010,7 @@
             this.kryptonPage10.LastVisibleSet = true;
             this.kryptonPage10.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage10.Name = "kryptonPage10";
-            this.kryptonPage10.Size = new System.Drawing.Size(316, 188);
+            this.kryptonPage10.Size = new System.Drawing.Size(314, 188);
             this.kryptonPage10.Text = "Inventory";
             this.kryptonPage10.ToolTipTitle = "Page ToolTip";
             this.kryptonPage10.UniqueName = "7E38A71BAAFD4560D886BDD734C37B8D";
@@ -1016,10 +1021,13 @@
             this.itemName,
             this.itemCount,
             this.itemMax});
+            this.listInv.ContextMenuStrip = this.contextInventory;
             this.listInv.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listInv.FullRowSelect = true;
             this.listInv.Location = new System.Drawing.Point(0, 0);
+            this.listInv.MultiSelect = false;
             this.listInv.Name = "listInv";
-            this.listInv.Size = new System.Drawing.Size(316, 188);
+            this.listInv.Size = new System.Drawing.Size(314, 188);
             this.listInv.TabIndex = 4;
             this.listInv.UseCompatibleStateImageBehavior = false;
             this.listInv.View = System.Windows.Forms.View.Details;
@@ -1041,6 +1049,21 @@
             this.itemMax.Tag = "max";
             this.itemMax.Text = "Max";
             this.itemMax.Width = 68;
+            // 
+            // contextInventory
+            // 
+            this.contextInventory.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.contextInventory.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.disposechooseAmountToolStripMenuItem});
+            this.contextInventory.Name = "contextInventory";
+            this.contextInventory.Size = new System.Drawing.Size(210, 26);
+            // 
+            // disposechooseAmountToolStripMenuItem
+            // 
+            this.disposechooseAmountToolStripMenuItem.Name = "disposechooseAmountToolStripMenuItem";
+            this.disposechooseAmountToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.disposechooseAmountToolStripMenuItem.Text = "Dispose (choose amount)";
+            this.disposechooseAmountToolStripMenuItem.Click += new System.EventHandler(this.disposechooseAmountToolStripMenuItem_Click);
             // 
             // kryptonPage13
             // 
@@ -1094,7 +1117,7 @@
             this.kryptonPage6.LastVisibleSet = true;
             this.kryptonPage6.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage6.Name = "kryptonPage6";
-            this.kryptonPage6.Size = new System.Drawing.Size(956, 62);
+            this.kryptonPage6.Size = new System.Drawing.Size(951, 62);
             this.kryptonPage6.Text = "Logging";
             this.kryptonPage6.ToolTipTitle = "Page ToolTip";
             this.kryptonPage6.UniqueName = "35B88DF3AE7348555A9D3B6EECDEB36E";
@@ -1114,7 +1137,7 @@
             this.textLog.ForeColor = System.Drawing.SystemColors.Window;
             this.textLog.Location = new System.Drawing.Point(0, 0);
             this.textLog.Name = "textLog";
-            this.textLog.Size = new System.Drawing.Size(956, 62);
+            this.textLog.Size = new System.Drawing.Size(951, 62);
             this.textLog.TabIndex = 0;
             this.textLog.Tag = "";
             this.textLog.Text = "";
@@ -1141,7 +1164,7 @@
             this.kryptonPage11.LastVisibleSet = true;
             this.kryptonPage11.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage11.Name = "kryptonPage11";
-            this.kryptonPage11.Size = new System.Drawing.Size(631, 605);
+            this.kryptonPage11.Size = new System.Drawing.Size(628, 605);
             this.kryptonPage11.Text = "Map";
             this.kryptonPage11.ToolTipTitle = "Page ToolTip";
             this.kryptonPage11.UniqueName = "1EA01AC7DE7B4854EFA1038D0559A4BD";
@@ -1152,7 +1175,7 @@
             this.webMap.Location = new System.Drawing.Point(0, 0);
             this.webMap.MinimumSize = new System.Drawing.Size(20, 20);
             this.webMap.Name = "webMap";
-            this.webMap.Size = new System.Drawing.Size(631, 605);
+            this.webMap.Size = new System.Drawing.Size(628, 605);
             this.webMap.TabIndex = 0;
             this.webMap.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webMap_DocumentCompleted);
             // 
@@ -1410,8 +1433,9 @@
             this.kryptonRibbonTab3,
             this.kryptonRibbonTab4,
             this.kryptonRibbonTab5});
-            this.ribbonMain.SelectedTab = this.kryptonRibbonTab2;
-            this.ribbonMain.Size = new System.Drawing.Size(1596, 115);
+            this.ribbonMain.SelectedContext = null;
+            this.ribbonMain.SelectedTab = this.kryptonRibbonTab4;
+            this.ribbonMain.Size = new System.Drawing.Size(1588, 115);
             this.ribbonMain.TabIndex = 0;
             // 
             // kryptonRibbonTab2
@@ -1750,7 +1774,6 @@
             this.kryptonRibbonTab4.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.kryptonRibbonGroup6});
             this.kryptonRibbonTab4.Text = "Actions";
-            this.kryptonRibbonTab4.Visible = false;
             // 
             // kryptonRibbonGroup6
             // 
@@ -1758,18 +1781,35 @@
             this.kryptonRibbonGroup6.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple11});
             this.kryptonRibbonGroup6.TextLine1 = "Actions";
-            this.kryptonRibbonGroup6.Visible = false;
             // 
             // kryptonRibbonGroupTriple11
             // 
             this.kryptonRibbonGroupTriple11.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.snipeButton});
+            this.snipeButton,
+            this.useIncenseButton,
+            this.useLuckyEgg});
             // 
             // snipeButton
             // 
             this.snipeButton.ImageLarge = ((System.Drawing.Image)(resources.GetObject("snipeButton.ImageLarge")));
             this.snipeButton.TextLine1 = "Snipe";
+            this.snipeButton.Visible = false;
             this.snipeButton.Click += new System.EventHandler(this.snipeButton_Click);
+            // 
+            // useIncenseButton
+            // 
+            this.useIncenseButton.ImageLarge = ((System.Drawing.Image)(resources.GetObject("useIncenseButton.ImageLarge")));
+            this.useIncenseButton.ImageSmall = ((System.Drawing.Image)(resources.GetObject("useIncenseButton.ImageSmall")));
+            this.useIncenseButton.TextLine1 = "Use ";
+            this.useIncenseButton.TextLine2 = "Incense";
+            this.useIncenseButton.Click += new System.EventHandler(this.kryptonRibbonGroupButton4_Click);
+            // 
+            // useLuckyEgg
+            // 
+            this.useLuckyEgg.ImageLarge = ((System.Drawing.Image)(resources.GetObject("useLuckyEgg.ImageLarge")));
+            this.useLuckyEgg.TextLine1 = "Use ";
+            this.useLuckyEgg.TextLine2 = "Lucky egg";
+            this.useLuckyEgg.Click += new System.EventHandler(this.useLuckyEgg_Click);
             // 
             // kryptonRibbonTab5
             // 
@@ -1870,7 +1910,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1596, 746);
+            this.ClientSize = new System.Drawing.Size(1588, 746);
             this.Controls.Add(this.workspaceDashboard);
             this.Controls.Add(this.ribbonMain);
             this.DoubleBuffered = true;
@@ -1904,6 +1944,7 @@
             this.kryptonWorkspaceCell3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage10)).EndInit();
             this.kryptonPage10.ResumeLayout(false);
+            this.contextInventory.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage13)).EndInit();
             this.kryptonPage13.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell5)).EndInit();
@@ -2102,6 +2143,10 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab kryptonRibbonTab5;
         internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton labelNext;
         internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton labelUpdate;
+        private System.Windows.Forms.ContextMenuStrip contextInventory;
+        private System.Windows.Forms.ToolStripMenuItem disposechooseAmountToolStripMenuItem;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton useIncenseButton;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton useLuckyEgg;
     }
 }
 

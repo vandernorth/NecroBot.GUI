@@ -12,6 +12,7 @@ using PoGo.NecroBot.Logic.Tasks;
 using PoGo.NecroBot.Logic.Utils;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
+using POGOProtos.Inventory.Item;
 using System;
 using System.Data;
 using System.Drawing;
@@ -40,6 +41,7 @@ namespace PoGo.NecroBot.GUI
         private int pokemonCaught;
         private int pokestopsVisited;
         private bool debugUI;
+        private bool debugLogs;
         private bool snipeStarted;
         private string version;
 
@@ -47,6 +49,7 @@ namespace PoGo.NecroBot.GUI
         {
             this.mapLoaded = false;
             this.debugUI = false;
+            this.debugLogs = false;
             this.snipeStarted = false;
             this.pokemonCaught = 0;
             this.pokestopsVisited = 0;
@@ -278,8 +281,10 @@ namespace PoGo.NecroBot.GUI
                     });
 
                 }
-
-                this.SetText($"[{now}] ({level.ToString()}) {message}", color);
+                if (level != LogLevel.Debug || this.debugLogs == true)
+                {
+                    this.SetText($"[{now}] ({level.ToString()}) {message}", color);
+                }
             };
             Logger.SetLogger(new EventLogger(LogLevel.Info, writes), "");
         }
@@ -882,7 +887,43 @@ namespace PoGo.NecroBot.GUI
         {
             this.sort((ListView)sender, e);
         }
+
+        private void disposechooseAmountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ListViewItem lvi = listInv.SelectedItems[0];
+                string name = lvi.Text;
+                string realName = "Item" + name.Replace("Lure", "TroyDisk");
+                Type type = typeof(ItemId);
+                ItemId item = (ItemId)Enum.Parse(type, realName);
+                string amount = Prompt.ShowDialog($"How many {name}s do you want to dispose?", $"Dispose {name}");
+                int iAmount = int.Parse(amount);
+                Logger.Write($"Trying to dispose {iAmount} {name}s");
+                this.disposeItem(item, iAmount);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Unable to dispose item", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void disposeItem(ItemId item, int amount)
+        {
+            RecycleInventoryItemResponse recResp = await this._session.Client.Inventory.RecycleItem(item, amount);
+            Logger.Write($"Disposed {amount} {item}s. Result: {recResp.Result}. You now have {recResp.NewCount} {item}s");
+        }
+
+        private void kryptonRibbonGroupButton4_Click(object sender, EventArgs e)
+        {
+            useIncense();
+        }
+
+        private void useLuckyEgg_Click(object sender, EventArgs e)
+        {
+            Task task = Logic.Tasks.UseLuckyEggConstantlyTask.Execute(this._session, new CancellationToken());
+        }
     }
+
 
     public static class KryptonFormExtension {
         static public void UIThread(this KryptonForm form, MethodInvoker code)
