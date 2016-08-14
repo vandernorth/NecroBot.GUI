@@ -162,11 +162,16 @@
 
             snipeLat = parseFloat(lat.replace(",", "."));
             snipeLng = parseFloat(lng.replace(",", "."));
-            ga('send', 'event', 'Sniping', 'Aim');
+            ga('send', 'event', 'Sniping', 'aim');
 
         }
 
-        function sendEvent(a,b,c,d) {
+        function sendEvent(a, b, c, d) {
+            if (!Number.isNaN(parseInt(d))) {
+                d = parseInt(d);
+            } else {
+                d = undefined;
+            }
             ga('send', 'event', a, b, c, d);
         }
 

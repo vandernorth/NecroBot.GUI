@@ -120,7 +120,7 @@ namespace PoGo.NecroBot.GUI
             });
         }
 
-        internal void sendEvent(string a, string b, string c, string d) {
+        internal void sendEvent(string a, string b, string c, int d) {
             this.UIThread(() => {
                 if (this.webMap.Document != null && this.mapLoaded == true)
                 {
@@ -393,7 +393,7 @@ namespace PoGo.NecroBot.GUI
         {
             this.runUpdate();
             this.setLocation(this._session.Settings.DefaultLongitude, this._session.Settings.DefaultLatitude);
-            this.sendEvent("Login",this._session.Profile.PlayerData.Username,"","");
+            this.sendEvent("Lifecycle","login",this._session.Profile.PlayerData.Username,0);
         }
 
         private void webMap_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)

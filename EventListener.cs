@@ -187,7 +187,7 @@ namespace PoGo.NecroBot.GUI
                     $"{returnRealBallName(pokemonCaptureEvent.Pokeball)} ({pokemonCaptureEvent.BallAmount} left)",
                     pokemonCaptureEvent.Exp.ToString() + "xp",
                     familyCandies});
-                this.gui.sendEvent("Catch", "Success", pokemonCaptureEvent.Id.ToString(), pokemonCaptureEvent.Cp.ToString());
+                this.gui.sendEvent("Catch", "success", pokemonCaptureEvent.Id.ToString(), pokemonCaptureEvent.Cp);
             }
             else
             {
