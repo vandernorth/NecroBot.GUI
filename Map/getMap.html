@@ -167,11 +167,7 @@
         }
 
         function sendEvent(a, b, c, d) {
-            if (!Number.isNaN(parseInt(d))) {
-                d = parseInt(d);
-            } else {
-                d = undefined;
-            }
+            d = parseInt(d);
             ga('send', 'event', a, b, c, d);
         }
 
