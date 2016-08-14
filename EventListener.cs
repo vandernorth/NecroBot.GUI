@@ -1,4 +1,5 @@
-﻿using PoGo.NecroBot.Logic.Common;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using PoGo.NecroBot.Logic.Common;
 using PoGo.NecroBot.Logic.Event;
 using PoGo.NecroBot.Logic.Logging;
 using PoGo.NecroBot.Logic.State;
@@ -13,7 +14,8 @@ namespace PoGo.NecroBot.GUI
     public class EventListener
     {
         private PokeGUI gui;
-        public EventListener(PokeGUI gui) {
+        public EventListener(PokeGUI gui)
+        {
             this.gui = gui;
         }
         public void HandleEvent(ProfileEvent evt, ISession session)
@@ -87,15 +89,12 @@ namespace PoGo.NecroBot.GUI
 
         public void HandleEvent(FortUsedEvent fortUsedEvent, ISession session)
         {
-                var itemString = fortUsedEvent.InventoryFull
-                ? session.Translation.GetTranslation(TranslationString.InvFullPokestopLooting)
-                : fortUsedEvent.Items;
-                Logger.Write(
-                    session.Translation.GetTranslation(TranslationString.EventFortUsed, fortUsedEvent.Name, fortUsedEvent.Exp, fortUsedEvent.Gems,
-                        itemString, fortUsedEvent.Latitude, fortUsedEvent.Longitude),
-                    LogLevel.Pokestop);
-        
-            this.gui.addPokestopVisited();
+            var itemString = fortUsedEvent.InventoryFull
+            ? session.Translation.GetTranslation(TranslationString.InvFullPokestopLooting)
+            : fortUsedEvent.Items;
+            Logger.Write(String.Format("Name: {0} \n - XP:    {1} \n - Gems:  {2} \n - Items: {3}", fortUsedEvent.Name, fortUsedEvent.Exp, fortUsedEvent.Gems, itemString), LogLevel.Pokestop);
+
+            this.gui.addPokestopVisited(new string[] { DateTime.Now.ToString("HH:mm:ss"),fortUsedEvent.Name, fortUsedEvent.Exp.ToString(), fortUsedEvent.Gems.ToString(), itemString, fortUsedEvent.Latitude.ToString("0.00000"), fortUsedEvent.Longitude.ToString("0.00000") });
         }
 
         public void HandleEvent(FortFailedEvent evt, ISession session)
@@ -107,7 +106,7 @@ namespace PoGo.NecroBot.GUI
         public void HandleEvent(FortTargetEvent fortTargetEvent, ISession session)
         {
             int intTimeForArrival = (int)(fortTargetEvent.Distance / (session.LogicSettings.WalkingSpeedInKilometerPerHour * 0.2777));
-            this.gui.SetControlText($"Next stop: {fortTargetEvent.Name} - {Math.Round(fortTargetEvent.Distance)}m - {intTimeForArrival} seconds", this.gui.labelNext);
+            this.gui.UIThread(() => this.gui.labelNext.TextLine1 = $"Next stop: {fortTargetEvent.Name} - {Math.Round(fortTargetEvent.Distance)}m - {intTimeForArrival} seconds");
             Logger.Write($"Next stop: {fortTargetEvent.Name} - {Math.Round(fortTargetEvent.Distance)}m - {intTimeForArrival} seconds", LogLevel.Pokestop);
         }
 
@@ -161,20 +160,34 @@ namespace PoGo.NecroBot.GUI
                 : session.Translation.GetTranslation(TranslationString.CatchStatus, strStatus);
 
             var familyCandies = pokemonCaptureEvent.FamilyCandies > 0
-                ? session.Translation.GetTranslation(TranslationString.Candies, pokemonCaptureEvent.FamilyCandies)
+                ? pokemonCaptureEvent.FamilyCandies.ToString()
                 : "";
 
             string message;
 
             if (pokemonCaptureEvent.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
             {
-                message = session.Translation.GetTranslation(TranslationString.EventPokemonCaptureSuccess, catchStatus, catchType, session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
+                message = String.Format("({0}) | ({1}) {2} \n - Lvl: {3}\n - CP: ({4}/{5})\n - IV: {6}%\n - Chance: {7}%\n - from {8}m dist with a {9} ({10} left).\n - {11} EXP earned\n - {12}\n - lat: {13}, long: {14}", catchStatus, catchType, session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
                 pokemonCaptureEvent.Level, pokemonCaptureEvent.Cp, pokemonCaptureEvent.MaxCp, pokemonCaptureEvent.Perfection.ToString("0.00"), pokemonCaptureEvent.Probability,
                 pokemonCaptureEvent.Distance.ToString("F2"),
                 returnRealBallName(pokemonCaptureEvent.Pokeball), pokemonCaptureEvent.BallAmount,
                 pokemonCaptureEvent.Exp, familyCandies, pokemonCaptureEvent.Latitude.ToString("0.000000"), pokemonCaptureEvent.Longitude.ToString("0.000000"));
                 Logger.Write(message, LogLevel.Caught);
-                this.gui.addPokemonCaught();
+
+                this.gui.addPokemonCaught(new string[] {
+                    $"{DateTime.Now.ToString("HH:mm:ss")}",
+                    catchStatus,
+                    session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
+                    pokemonCaptureEvent.Level.ToString(),
+                    $"{pokemonCaptureEvent.Cp} / {pokemonCaptureEvent.MaxCp}",
+                    pokemonCaptureEvent.Perfection.ToString("0.00") + "%",
+                    pokemonCaptureEvent.Probability.ToString("0.00") + "%",
+                    pokemonCaptureEvent.Distance.ToString("F2") + "m",
+                    catchType,
+                    $"{returnRealBallName(pokemonCaptureEvent.Pokeball)} ({pokemonCaptureEvent.BallAmount} left)",
+                    pokemonCaptureEvent.Exp.ToString() + "xp",
+                    familyCandies});
+                this.gui.sendEvent("Catch", "Success", pokemonCaptureEvent.Id.ToString(), pokemonCaptureEvent.Cp.ToString());
             }
             else
             {
@@ -237,6 +250,25 @@ namespace PoGo.NecroBot.GUI
             Logger.Write(updateEvent.ToString(), LogLevel.Update);
         }
 
+        private void HandleEvent(SnipeModeEvent snipeModeEvent, ISession session)
+        {
+            string onOff = snipeModeEvent.Active ? "On" : "Off";
+            Logger.Write($"Sniper {onOff}", LogLevel.Sniper);
+        }
+        /*private void HandleEvent(DisplayHighestsPokemonEvent displayEvent, ISession session)
+        {
+            
+        }*/
+        private void HandleEvent(UpdatePositionEvent posEvent, ISession session)
+      {
+            Logger.Write($"Position changed. lat={posEvent.Latitude.ToString("0.00000")}, lng={posEvent.Longitude.ToString("0.00000")}", LogLevel.Debug);
+      }
+
+        private void HandleEvent(PokeStopListEvent polEvent, ISession session)
+        {
+            Logger.Write($"PokeStopList has {polEvent.Forts.Count} items", LogLevel.Debug);
+        }
+        
         public void Listen(IEvent evt, ISession session)
         {
             dynamic eve = evt;
@@ -246,8 +278,19 @@ namespace PoGo.NecroBot.GUI
                 HandleEvent(eve, session);
             }
             // ReSharper disable once EmptyGeneralCatchClause
-            catch
+            catch (RuntimeBinderException) {
+                Logger.Write($"No listener for event {evt.GetType().Name}", LogLevel.None);
+            }
+            catch (Exception ex)
             {
+                try
+                {
+                    Logger.Write($"Unhandeled exception ({ex.GetType().Name}) on event {evt.GetType().Name}: {ex.Message}", LogLevel.Error);
+                }
+                catch
+                {
+                    //die here..
+                }
             }
         }
     }

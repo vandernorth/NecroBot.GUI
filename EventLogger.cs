@@ -22,10 +22,6 @@ namespace PoGo.NecroBot.GUI
         public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor consoleColor = ConsoleColor.Black)
         {
             Color color = Color.White;
-            if (level == LogLevel.Debug)
-            {
-                return;
-            }
 
             switch (level)
             {

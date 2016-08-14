@@ -252,13 +252,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>del  $(TargetDir)\NecroBot.exe /Q
+    <PostBuildEvent>IF "$(ConfigurationName)" == "Release" ( del  $(TargetDir)\NecroBot.exe /Q
 rmdir $(TargetDir)\Logs /S /Q
-(robocopy $(TargetDir) $(TargetDir)Resources\ *.dll *.pdb *.xml /mov /is)
-("C:\Program Files\7-Zip\7z" a release.zip ./*)  ^&amp; exit 0</PostBuildEvent>
+(robocopy $(TargetDir) $(TargetDir)Resources\ *.dll *.pdb *.xml /mov /is /xf workspace.xml)
+("C:\Program Files\7-Zip\7z" a release.zip ./*)  ^&amp; exit 0)
+
+(robocopy $(TargetDir) $(TargetDir)Resources\ *.dll *.pdb *.xml /mov /is /xf workspace.xml) ^&amp; exit 0</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>rmdir $(TargetDir) /S /Q</PreBuildEvent>
+    <PreBuildEvent>IF "$(ConfigurationName)" == "Release" (rmdir $(TargetDir) /S /Q)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

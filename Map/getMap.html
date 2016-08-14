@@ -38,7 +38,7 @@
 
   ga('create', 'UA-82431952-1', { 'cookieDomain': 'none' });
   ga('send', 'pageview');
-
+ 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script type="text/javascript">
@@ -55,6 +55,8 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
+
+        ga('send', 'event', 'Lifecycle', 'start', getParameterByName('version'));
 
         function loc(lat, long) {
             
@@ -128,32 +130,44 @@
             map.setCenter(snipeLocation);
         }
 
+        var snipeAnimationInterval, snipeLat, snipeLng;
         function animateSniper(lat, lng) {
-            lat = parseFloat(lat.replace(",","."));
-            lng = parseFloat(lng.replace(",", "."));
-            var frames = [
-                [0.1, 0.1],
-                [-0.1, 0.2],
-                [0.2, -0.1],
-                [-0.1, 0.1],
-                [-0.1, -0, 4],
-                [0.4, -0, 4],
-                [0, 0.4],
-                [0.6, 0.6],
-                [0.6, -0.6],
-                [-0.6, 0.6],
-                [-0.6, -0.6]
-            ], frame = 0;
-            setInterval(function () {
-                var add = frames[frame],
-                    newLat = (lat+  (add[0]/1000)).toString(),
-                    newLng = (lng + (add[1] / 1000)).toString();
-                snipeMarker.setPosition(loc(newLat, newLng));
-                frame++;
-                if (frame > frames.length - 1) {
-                    frame = 0;
-                }
-            }, 750);
+            if (!snipeAnimationInterval) {
+                snipeAnimationInterval = true;
+                var frames = [
+                    [0.1, 0.1],
+                    [-0.1, 0.2],
+                    [0.2, -0.1],
+                    [-0.1, 0.1],
+                    [-0.1, -0, 4],
+                    [0.4, -0, 4],
+                    [0, 0.4],
+                    [0.6, 0.6],
+                    [0.6, -0.6],
+                    [-0.6, 0.6],
+                    [-0.6, -0.6]
+                ], frame = 0;
+
+                setInterval(function () {
+                    var add = frames[frame],
+                        newLat = (snipeLat + (add[0] / 1000)).toString(),
+                        newLng = (snipeLng + (add[1] / 1000)).toString();
+                    snipeMarker.setPosition(loc(newLat, newLng));
+                    frame++;
+                    if (frame > frames.length - 1) {
+                        frame = 0;
+                    }
+                }, 750);
+            }
+
+            snipeLat = parseFloat(lat.replace(",", "."));
+            snipeLng = parseFloat(lng.replace(",", "."));
+            ga('send', 'event', 'Sniping', 'Aim');
+
+        }
+
+        function sendEvent(a,b,c,d) {
+            ga('send', 'event', a, b, c, d);
         }
 
         function updateMarker(lat, lng) {
