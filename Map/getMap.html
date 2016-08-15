@@ -174,12 +174,32 @@
             ga('send', 'event', a, b, c, d);
         }
 
+        var lastLat, lastLng;
         function updateMarker(lat, lng) {
             if (CDAM_marker && map) {
                 var makerLocation = loc(lat, lng);
                 CDAM_marker.setPosition(makerLocation);
                 map.setCenter(makerLocation);
+
+                if (lastLat && lastLng) {
+                    var walkThisLine = [
+                       { lat: lastLat, lng: lastLng },
+                       { lat: lat, lng: lng }
+                    ];
+                    var flightPath = new google.maps.Polyline({
+                        path: walkThisLine,
+                        geodesic: true,
+                        map:map,
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    flightPath.setMap(map);
+                }
             }
+
+            lastLat = lat;
+            lastLng = lng;
         }
         function setDebug(text) {
             document.getElementById("debug").innerHTML = text + '<br>' + document.getElementById("debug").innerHTML;

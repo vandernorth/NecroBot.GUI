@@ -42,6 +42,7 @@ namespace PoGo.NecroBot.GUI
         private int pokestopsVisited;
         private bool debugUI;
         private bool debugLogs;
+        private bool debugMap;
         private bool snipeStarted;
         private string version;
 
@@ -51,6 +52,7 @@ namespace PoGo.NecroBot.GUI
             this.debugUI = false;
             this.debugLogs = false;
             this.snipeStarted = false;
+            this.debugMap = false;
             this.pokemonCaught = 0;
             this.pokestopsVisited = 0;
             InitializeComponent();
@@ -74,6 +76,14 @@ namespace PoGo.NecroBot.GUI
             this.listEvolutions.ListViewItemSorter = lvwEvolvesColumnSorter;
             this.listTransfers.ListViewItemSorter = lvwTransfersColumnSorter;
             this.listPokestops.ListViewItemSorter = lvwPokestopsColumnSorter;
+            lvwCatchesColumnSorter.SortColumn = 0;
+            lvwEvolvesColumnSorter.SortColumn = 0;
+            lvwTransfersColumnSorter.SortColumn = 0;
+            lvwPokestopsColumnSorter.SortColumn = 0;
+            lvwCatchesColumnSorter.Order = SortOrder.Descending;
+            lvwEvolvesColumnSorter.Order = SortOrder.Descending;
+            lvwTransfersColumnSorter.Order = SortOrder.Descending;
+            lvwPokestopsColumnSorter.Order = SortOrder.Descending;
             this.listPokemonStats.Items.Clear();
             fixWebMap();
 
@@ -121,6 +131,8 @@ namespace PoGo.NecroBot.GUI
                 listCatches.Items.Add(new ListViewItem(row));
                 this.listCatches.Sort();
             });
+
+            this.getPokemons();
         }
 
         internal void sendEvent(string a, string b, string c, int d) {
@@ -144,6 +156,7 @@ namespace PoGo.NecroBot.GUI
                 this.listPokestops.Items.Add(new ListViewItem(row));
                 this.listPokestops.Sort();
             });
+            this.updateInventory();
         }
         public void updateStatusCounters()
         {
@@ -377,6 +390,9 @@ namespace PoGo.NecroBot.GUI
             machine.AsyncStart(new VersionCheckState(), session);
 
             string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}&version={this.version}";
+            if (debugMap == true) {
+                filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
+            }
             this.webMap.ScriptErrorsSuppressed = true;
             this.webMap.Url = new Uri(filename);
             
@@ -416,6 +432,10 @@ namespace PoGo.NecroBot.GUI
             this.getForts();
         }
 
+        private async void updateInventory() {
+            await this._session.Inventory.RefreshCachedInventory();
+            await this.getInventory();
+        }
         private async void getForts()
         {
             var mapObjects = await this._session.Client.Map.GetMapObjects();
@@ -922,7 +942,71 @@ namespace PoGo.NecroBot.GUI
         {
             Task task = Logic.Tasks.UseLuckyEggConstantlyTask.Execute(this._session, new CancellationToken());
         }
+
+        private void favoriteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listPokemon.SelectedItems.Count == 1)
+            {
+                ListViewItem selected = listPokemon.SelectedItems[0];
+                string name = selected.SubItems[0].Text;
+                ulong id = ulong.Parse(selected.SubItems[10].Text);
+                bool isFavorite = selected.SubItems[21].Text == "Yes";
+                if (isFavorite)
+                {
+                    this.setFavorite(id, !isFavorite);
+                }
+                else {
+                    Logger.Write("New name was empty, not setting it!");
+                }
+            }
+            else {
+                MessageBox.Show($"Unable to favorite multiple pokemon at the same time", $"Sorry...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        private async void setFavorite(ulong id, bool favorite, bool updateAfter = true)
+        {
+            SetFavoritePokemonResponse favResp = await this._session.Client.Inventory.SetFavoritePokemon(id, favorite);
+            Logger.Write($"Favorited pokemon: {favResp.Result}");
+
+            if (updateAfter) {
+                await this.getPokemons();
+            }
+        }
+
+        private void powerUpMAXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listPokemon.SelectedItems.Count == 1)
+            {
+                ListViewItem selected = listPokemon.SelectedItems[0];
+                string name = selected.SubItems[0].Text;
+                ulong id = ulong.Parse(selected.SubItems[10].Text);
+                var result = MessageBox.Show($"Are you sure?\nThis will power-up {name} until on of the following occurs:\n - Your amount of stardust is insufficient.\n - You do not have enough candies to power-up.\n - The pokemon cannot be powered-up any further\n - Any other unexpected things that happen along the way.","Power-Up MAX", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (result == DialogResult.OK)
+                {
+                    this.maxPowerUp(id, name);
+                }
+            }
+            else {
+                MessageBox.Show($"Unable to MAX-PowerUp multiple pokemon at the same time", $"Sorry...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private async void maxPowerUp(ulong id, string name)
+        {
+            int i = 0;
+            UpgradePokemonResponse ups = await this._session.Client.Inventory.UpgradePokemon(id);
+            while (ups.Result == UpgradePokemonResponse.Types.Result.Success) {
+                Logger.Write($"POWERUP-MAX {name} run #{i}. Result: {ups.Result}");
+                i++;
+                DelayingUtils.Delay(this._session.LogicSettings.DelayBetweenPlayerActions, 0);
+                ups = await this._session.Client.Inventory.UpgradePokemon(id);
+            }
+            Logger.Write($"POWERUP-MAX {name} run #{i}. Result: {ups.Result}. Stopping.");
+            await this.getPokemons();
+        }
     }
+
+
 
 
     public static class KryptonFormExtension {

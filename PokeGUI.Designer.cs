@@ -76,6 +76,7 @@
             this.powerUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addStatisticsPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.favoriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imagesPokemon25 = new System.Windows.Forms.ImageList(this.components);
             this.kryptonPage2 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.listCatches = new System.Windows.Forms.ListView();
@@ -206,6 +207,7 @@
             this.kryptonPage15 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.powerUpMAXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell4)).BeginInit();
             this.kryptonWorkspaceCell4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage8)).BeginInit();
@@ -348,7 +350,7 @@
             this.kryptonPage2,
             this.kryptonPage1,
             this.kryptonPage7});
-            this.kryptonWorkspaceCell1.SelectedIndex = 1;
+            this.kryptonWorkspaceCell1.SelectedIndex = 0;
             this.kryptonWorkspaceCell1.UniqueName = "055F7ECDAE7745FB37B11344DAF5CD4C";
             // 
             // kryptonPage9
@@ -361,7 +363,7 @@
             this.kryptonPage9.LastVisibleSet = true;
             this.kryptonPage9.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage9.Name = "kryptonPage9";
-            this.kryptonPage9.Size = new System.Drawing.Size(956, 273);
+            this.kryptonPage9.Size = new System.Drawing.Size(951, 273);
             this.kryptonPage9.Text = "Pokemon";
             this.kryptonPage9.ToolTipTitle = "Page ToolTip";
             this.kryptonPage9.UniqueName = "A45B609C7A9C45D89396C8613378EDC4";
@@ -408,7 +410,7 @@
             this.listPokemon.GridLines = true;
             this.listPokemon.Location = new System.Drawing.Point(0, 0);
             this.listPokemon.Name = "listPokemon";
-            this.listPokemon.Size = new System.Drawing.Size(956, 273);
+            this.listPokemon.Size = new System.Drawing.Size(951, 273);
             this.listPokemon.SmallImageList = this.imagesPokemon25;
             this.listPokemon.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listPokemon.TabIndex = 7;
@@ -543,11 +545,13 @@
             this.evolveToolStripMenuItem,
             this.transferToolStripMenuItem,
             this.powerUpToolStripMenuItem,
+            this.powerUpMAXToolStripMenuItem,
             this.renameToolStripMenuItem,
-            this.addStatisticsPageToolStripMenuItem});
+            this.addStatisticsPageToolStripMenuItem,
+            this.favoriteToolStripMenuItem});
             this.contextPokemon.Name = "contextPokemon";
             this.contextPokemon.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.contextPokemon.Size = new System.Drawing.Size(174, 114);
+            this.contextPokemon.Size = new System.Drawing.Size(174, 180);
             // 
             // evolveToolStripMenuItem
             // 
@@ -584,6 +588,13 @@
             this.addStatisticsPageToolStripMenuItem.Text = "Add statistics page";
             this.addStatisticsPageToolStripMenuItem.Visible = false;
             this.addStatisticsPageToolStripMenuItem.Click += new System.EventHandler(this.addStatisticsPageToolStripMenuItem_Click);
+            // 
+            // favoriteToolStripMenuItem
+            // 
+            this.favoriteToolStripMenuItem.Name = "favoriteToolStripMenuItem";
+            this.favoriteToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.favoriteToolStripMenuItem.Text = "(Un)Favorite";
+            this.favoriteToolStripMenuItem.Click += new System.EventHandler(this.favoriteToolStripMenuItem_Click);
             // 
             // imagesPokemon25
             // 
@@ -1433,8 +1444,7 @@
             this.kryptonRibbonTab3,
             this.kryptonRibbonTab4,
             this.kryptonRibbonTab5});
-            this.ribbonMain.SelectedContext = null;
-            this.ribbonMain.SelectedTab = this.kryptonRibbonTab4;
+            this.ribbonMain.SelectedTab = this.kryptonRibbonTab2;
             this.ribbonMain.Size = new System.Drawing.Size(1588, 115);
             this.ribbonMain.TabIndex = 0;
             // 
@@ -1904,6 +1914,13 @@
             this.openFileDialog.Filter = "XML files|*.xml";
             this.openFileDialog.Title = "Load Workspace Layout";
             // 
+            // powerUpMAXToolStripMenuItem
+            // 
+            this.powerUpMAXToolStripMenuItem.Name = "powerUpMAXToolStripMenuItem";
+            this.powerUpMAXToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.powerUpMAXToolStripMenuItem.Text = "Power Up MAX";
+            this.powerUpMAXToolStripMenuItem.Click += new System.EventHandler(this.powerUpMAXToolStripMenuItem_Click);
+            // 
             // PokeGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2147,6 +2164,8 @@
         private System.Windows.Forms.ToolStripMenuItem disposechooseAmountToolStripMenuItem;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton useIncenseButton;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton useLuckyEgg;
+        private System.Windows.Forms.ToolStripMenuItem favoriteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem powerUpMAXToolStripMenuItem;
     }
 }
 
