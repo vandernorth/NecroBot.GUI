@@ -171,7 +171,7 @@ namespace PoGo.NecroBot.GUI
             this.UIThread(()=> {
                 if (addTime)
                 {
-                    text = $"[{DateTime.Now.ToString("HH:mm:ss")}] {text}";
+                    text = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {text}";
                 }
 
 
@@ -255,7 +255,7 @@ namespace PoGo.NecroBot.GUI
 
         private void setLogger() {
             Write writes = (string message, LogLevel level, Color color) => {
-                string now = DateTime.Now.ToString("HH:mm:ss");
+                string now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 if (level == LogLevel.Evolve)
                 {
                     this.UIThread(() => {

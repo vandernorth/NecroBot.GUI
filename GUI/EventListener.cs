@@ -94,7 +94,7 @@ namespace PoGo.NecroBot.GUI
             : fortUsedEvent.Items;
             Logger.Write(String.Format("Name: {0} \n - XP:    {1} \n - Gems:  {2} \n - Items: {3}", fortUsedEvent.Name, fortUsedEvent.Exp, fortUsedEvent.Gems, itemString), LogLevel.Pokestop);
 
-            this.gui.addPokestopVisited(new string[] { DateTime.Now.ToString("HH:mm:ss"),fortUsedEvent.Name, fortUsedEvent.Exp.ToString(), fortUsedEvent.Gems.ToString(), itemString, fortUsedEvent.Latitude.ToString("0.00000"), fortUsedEvent.Longitude.ToString("0.00000") });
+            this.gui.addPokestopVisited(new string[] { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),fortUsedEvent.Name, fortUsedEvent.Exp.ToString(), fortUsedEvent.Gems.ToString(), itemString, fortUsedEvent.Latitude.ToString("0.00000"), fortUsedEvent.Longitude.ToString("0.00000") });
         }
 
         public void HandleEvent(FortFailedEvent evt, ISession session)
@@ -175,7 +175,7 @@ namespace PoGo.NecroBot.GUI
                 Logger.Write(message, LogLevel.Caught);
 
                 this.gui.addPokemonCaught(new string[] {
-                    $"{DateTime.Now.ToString("HH:mm:ss")}",
+                    $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}",
                     catchStatus,
                     session.Translation.GetPokemonTranslation(pokemonCaptureEvent.Id),
                     pokemonCaptureEvent.Level.ToString(),
