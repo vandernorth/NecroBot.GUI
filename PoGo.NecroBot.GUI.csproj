@@ -105,18 +105,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnSort.cs" />
-    <Compile Include="EventListener.cs" />
-    <Compile Include="EventLogger.cs" />
-    <Compile Include="PokeGUI.cs">
+    <Compile Include="GUI\ColumnSort.cs" />
+    <Compile Include="GUI\EventListener.cs" />
+    <Compile Include="GUI\EventLogger.cs" />
+    <Compile Include="GUI\PokeGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PokeGUI.Designer.cs">
+    <Compile Include="GUI\PokeGUI.Designer.cs">
       <DependentUpon>PokeGUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="PokeGUI.resx">
+    <EmbeddedResource Include="GUI\PokeGUI.resx">
       <DependentUpon>PokeGUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -138,6 +138,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
