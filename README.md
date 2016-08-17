@@ -28,7 +28,11 @@ GUI for the Pokemon Go - Necrobot
  - If you save your workspace as workspace.xml it will reload after restart.
 
 ## Screenshots
+### 1. Everything you need
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen1.png "Screenshot")
+### 2. All actions on the pokelist
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen2.png "Screenshot")
+### 3. Organize how you want it
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen3.png "Screenshot")
+### 4. Full screen map
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen4.png "Screenshot")
