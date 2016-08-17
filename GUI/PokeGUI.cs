@@ -390,12 +390,12 @@ namespace PoGo.NecroBot.GUI
             }
 
             machine.AsyncStart(new VersionCheckState(), session);
-
-            string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
+            string now = DateTime.Now.ToString("yyyyMMddHHmm");
+            string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?date={now}lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
             if (debugMap == true) {
                 filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}";
             }
-            this.webMap.ScriptErrorsSuppressed = true;
+            this.webMap.ScriptErrorsSuppressed = !debugMap;
             this.webMap.Url = new Uri(filename);
             
             if (settings.TelegramSettings.UseTelegramAPI)
@@ -422,7 +422,7 @@ namespace PoGo.NecroBot.GUI
         private void webMap_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             this.mapLoaded = true;
-            this.webMap.ScriptErrorsSuppressed = true;
+            this.webMap.ScriptErrorsSuppressed = !debugMap;
         }
 
         private async void runUpdate()

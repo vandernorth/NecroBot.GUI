@@ -46,6 +46,10 @@
         var CDAM_marker;
         var snipeMarker;
 
+        Math.log2 = Math.log2 || function (x) {
+            return Math.log(x) / Math.LN2;
+        };
+
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -68,13 +72,13 @@
         function getZoomLevel(rad) {
             try{
                 rad = parseInt(rad);
-                if (rad && typeof rad === 'number' && rad > 1 ) {
+                if (rad && typeof rad === 'number' && rad > 1) {
                     return Math.floor(Math.min(Math.max(25 - Math.log2(rad), 10), 21));
                 } else {
                     return 16;
                 }
             }
-            catch(ex) {
+            catch (ex) {
                 return 16;
             }
         }
