@@ -66,11 +66,16 @@
         }
 
         function getZoomLevel(rad) {
-            rad = parseInt(rad);
-            if (rad && !Number.isNaN(rad)) {
+            try{
                 rad = parseInt(rad);
-                return Math.floor(Math.min(Math.max(25 - Math.log2(rad), 10), 21));
-            } else {
+                if (rad && !isNaN(rad)) {
+                    rad = parseInt(rad);
+                    return Math.floor(Math.min(Math.max(25 - Math.log2(rad), 10), 21));
+                } else {
+                    return 16;
+                }
+            }
+            catch(ex) {
                 return 16;
             }
         }
