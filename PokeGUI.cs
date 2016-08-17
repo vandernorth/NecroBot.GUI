@@ -19,7 +19,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -316,6 +315,10 @@ namespace PoGo.NecroBot.GUI
                 }
             }
             else {
+                if (settings.ConsoleSettings == null)
+                {
+                    settings.ConsoleSettings = new ConsoleConfig();
+                }
                 settings.ConsoleSettings.TranslationLanguageCode = "en";
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));

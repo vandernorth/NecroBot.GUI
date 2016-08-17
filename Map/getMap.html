@@ -65,11 +65,20 @@
             return new google.maps.LatLng(lat, long);
         }
 
+        function getZoomLevel(rad) {
+            rad = parseInt(rad);
+            if (rad && !Number.isNaN(rad)) {
+                rad = parseInt(rad);
+                return Math.floor(Math.min(Math.max(25 - Math.log2(rad), 10), 21));
+            } else {
+                return 16;
+            }
+        }
         function initialize() {
             var CDAM_Latlng = loc(getParameterByName('lat') || '52.831232142', getParameterByName('long') || '4.634342343')
             var rad = getParameterByName('radius');
             var CDAM_mapOptions = {
-                zoom: 17,
+                zoom: getZoomLevel(rad),
                 center: CDAM_Latlng
             }
             map = new google.maps.Map(document.getElementById('map-canvas'), CDAM_mapOptions);

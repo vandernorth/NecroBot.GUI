@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PokeGUI));
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Tangela", 114);
             this.kryptonManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
-            this.menuExit = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
             this.kryptonDockingManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
             this.kryptonRibbonGroupButton8 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupButton7 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -74,6 +73,7 @@
             this.evolveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.transferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.powerUpMAXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addStatisticsPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.favoriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -207,7 +207,6 @@
             this.kryptonPage15 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.powerUpMAXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell4)).BeginInit();
             this.kryptonWorkspaceCell4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage8)).BeginInit();
@@ -259,10 +258,6 @@
             // kryptonManager
             // 
             this.kryptonManager.GlobalPaletteMode = ComponentFactory.Krypton.Toolkit.PaletteModeManager.SparkleOrange;
-            // 
-            // menuExit
-            // 
-            this.menuExit.Text = "Quit";
             // 
             // kryptonRibbonGroupButton8
             // 
@@ -551,7 +546,7 @@
             this.favoriteToolStripMenuItem});
             this.contextPokemon.Name = "contextPokemon";
             this.contextPokemon.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.contextPokemon.Size = new System.Drawing.Size(174, 180);
+            this.contextPokemon.Size = new System.Drawing.Size(174, 158);
             // 
             // evolveToolStripMenuItem
             // 
@@ -573,6 +568,13 @@
             this.powerUpToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.powerUpToolStripMenuItem.Text = "&Power Up";
             this.powerUpToolStripMenuItem.Click += new System.EventHandler(this.powerUpToolStripMenuItem_Click);
+            // 
+            // powerUpMAXToolStripMenuItem
+            // 
+            this.powerUpMAXToolStripMenuItem.Name = "powerUpMAXToolStripMenuItem";
+            this.powerUpMAXToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.powerUpMAXToolStripMenuItem.Text = "Power Up MAX";
+            this.powerUpMAXToolStripMenuItem.Click += new System.EventHandler(this.powerUpMAXToolStripMenuItem_Click);
             // 
             // renameToolStripMenuItem
             // 
@@ -1435,8 +1437,6 @@
             this.ribbonMain.InDesignHelperMode = true;
             this.ribbonMain.Name = "ribbonMain";
             this.ribbonMain.RibbonAppButton.AppButtonImage = ((System.Drawing.Image)(resources.GetObject("ribbonMain.RibbonAppButton.AppButtonImage")));
-            this.ribbonMain.RibbonAppButton.AppButtonMenuItems.AddRange(new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItemBase[] {
-            this.menuExit});
             this.ribbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.ribbonMain.RibbonAppButton.AppButtonText = "Go";
             this.ribbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
@@ -1914,13 +1914,6 @@
             this.openFileDialog.Filter = "XML files|*.xml";
             this.openFileDialog.Title = "Load Workspace Layout";
             // 
-            // powerUpMAXToolStripMenuItem
-            // 
-            this.powerUpMAXToolStripMenuItem.Name = "powerUpMAXToolStripMenuItem";
-            this.powerUpMAXToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.powerUpMAXToolStripMenuItem.Text = "Power Up MAX";
-            this.powerUpMAXToolStripMenuItem.Click += new System.EventHandler(this.powerUpMAXToolStripMenuItem_Click);
-            // 
             // PokeGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2010,7 +2003,6 @@
         private ComponentFactory.Krypton.Workspace.KryptonWorkspaceCell kryptonWorkspaceCell6;
         private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage11;
         private ComponentFactory.Krypton.Navigator.KryptonPage pageLogging;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem menuExit;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbon ribbonMain;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab kryptonRibbonTab1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup kryptonRibbonGroup1;

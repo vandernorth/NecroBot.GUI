@@ -70,6 +70,10 @@
     <Reference Include="ComponentFactory.Krypton.Workspace">
       <HintPath>KryptonComponents\ComponentFactory.Krypton.Workspace.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Protobuf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>PokemonGoLibs\Google.Protobuf.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>PokemonGoLibs\Newtonsoft.Json.dll</HintPath>
     </Reference>
