@@ -316,8 +316,7 @@ namespace PoGo.NecroBot.GUI
                 }
             }
             else {
-                settings.TranslationLanguageCode = "en";
-                settings.AutoUpdate = false;
+                settings.ConsoleSettings.TranslationLanguageCode = "en";
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             _session = session;
@@ -389,16 +388,16 @@ namespace PoGo.NecroBot.GUI
 
             machine.AsyncStart(new VersionCheckState(), session);
 
-            string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}&version={this.version}";
+            string filename =  $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
             if (debugMap == true) {
-                filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.DefaultLatitude}&long={settings.DefaultLongitude}&radius={settings.MaxTravelDistanceInMeters}";
+                filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}";
             }
             this.webMap.ScriptErrorsSuppressed = true;
             this.webMap.Url = new Uri(filename);
             
-            if (settings.UseTelegramAPI)
+            if (settings.TelegramSettings.UseTelegramAPI)
             {
-                session.Telegram = new Logic.Service.TelegramService(settings.TelegramAPIKey, session);
+                session.Telegram = new Logic.Service.TelegramService(settings.TelegramSettings.TelegramAPIKey, session);
             }
 
             if (session.LogicSettings.UseSnipeLocationServer)
@@ -940,7 +939,8 @@ namespace PoGo.NecroBot.GUI
 
         private void useLuckyEgg_Click(object sender, EventArgs e)
         {
-            Task task = Logic.Tasks.UseLuckyEggConstantlyTask.Execute(this._session, new CancellationToken());
+            CancellationToken ct = new CancellationToken();
+            Task task = UseLuckyEggConstantlyTask.Execute(this._session, ct);
         }
 
         private void favoriteToolStripMenuItem_Click(object sender, EventArgs e)

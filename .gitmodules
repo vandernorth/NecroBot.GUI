@@ -1,0 +1,6 @@
+[submodule "NecroBot"]
+	path = NecroBot
+	url = https://github.com/NoxxDev/NecroBot.git
+[submodule "s2-geometry-library-csharp"]
+	path = s2-geometry-library-csharp
+	url = https://github.com/onovotny/s2-geometry-library-csharp.git
