@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace PoGo.NecroBot.GUI
 {
@@ -201,14 +202,20 @@ namespace PoGo.NecroBot.GUI
             });
         }
 
-        private void SetList(ListView control, ListViewItem[] lvi)
+        private void SetList(ListView control, ListViewItem[] lvi, bool keep = false)
         {
             this.UIThread(() =>
             {
-                control.Items.Clear();
+                if (!keep)
+                {
+                    control.Items.Clear();
+                }
                 foreach (var item in lvi)
                 {
-                    control.Items.Add(item);
+                    if (item != null)
+                    {
+                        control.Items.Add(item);
+                    }
                 }
             });
         }
@@ -582,10 +589,19 @@ namespace PoGo.NecroBot.GUI
                 labelEggCount.TextLine2 = eggsIncubating.ToString();
             });
         }
+
+        private struct pokemonItem {
+            public ListViewItem lvi;
+            public bool addedToList;
+        }
+        private Dictionary<ulong, pokemonItem> allPokemonItems;
         private async Task getPokemons()
         {
             try
             {
+                if (allPokemonItems == null) {
+                    allPokemonItems = new Dictionary<ulong, pokemonItem>();
+                }
                 var items = await this._session.Inventory.GetPokemons();
                 var myPokemonSettings = await this._session.Inventory.GetPokemonSettings();
                 var pokemonSettings = myPokemonSettings.ToList();
@@ -627,20 +643,62 @@ namespace PoGo.NecroBot.GUI
                     string isFavorite = item.Item1.Favorite == 1 ? "Yes" : "";
                     var timeSpan = DateTime.FromFileTimeUtc(this.FromUnixTime(item.Item1.CreationTimeMs / 1000).ToFileTime());
                     var localDateTime = timeSpan.ToString("yyyy-MM-dd HH:mm:ss");
-                    string[] row = {thisName, ((int)(item.Item1.PokemonId)).ToString(), cpInfo, item.Item2.ToString("F0"), cpPrcnt, item.Item3.ToString("F0") + "%", item.Item4.ToString(), canEvolve, thisCandies, extra, item.Item1.Id.ToString(), item.Item1.Move1.ToString(), item.Item1.Move2.ToString(), localDateTime,
-                            $"{item.Item1.HeightM:0.00}m", $"{item.Item1.WeightKg:0.00}kg", $"{item.Item1.Stamina}/{item.Item1.StaminaMax}", item.Item1.NumUpgrades.ToString(), item.Item1.IndividualAttack.ToString(), item.Item1.IndividualDefense.ToString(), item.Item1.IndividualStamina.ToString(), isFavorite, item.Item1.BattlesAttacked.ToString(),item.Item1.BattlesDefended.ToString(),item.Item1.DeployedFortId  };
-                    ListViewItem thisOne = new ListViewItem(row);
-                    thisOne.ImageIndex = (int)(item.Item1.PokemonId);
-                    pokemonsIHave[(int)(item.Item1.PokemonId)] = true;
-                    lvis[index] = thisOne;
-                    index++;
+                    string[] row = {
+                        thisName,
+                        ((int)(item.Item1.PokemonId)).ToString(),
+                        cpInfo,
+                        item.Item2.ToString("F0"),
+                        cpPrcnt,
+                        item.Item3.ToString("F0") + "%",
+                        item.Item4.ToString(),
+                        canEvolve,
+                        thisCandies,
+                        extra,
+                        item.Item1.Id.ToString(),
+                        item.Item1.Move1.ToString(),
+                        item.Item1.Move2.ToString(),
+                        localDateTime,
+                        $"{item.Item1.HeightM:0.00}m",
+                        $"{item.Item1.WeightKg:0.00}kg", $"{item.Item1.Stamina}/{item.Item1.StaminaMax}",
+                        item.Item1.NumUpgrades.ToString(),
+                        item.Item1.IndividualAttack.ToString(),
+                        item.Item1.IndividualDefense.ToString(),
+                        item.Item1.IndividualStamina.ToString(),
+                        isFavorite, item.Item1.BattlesAttacked.ToString(),
+                        item.Item1.BattlesDefended.ToString(),
+                        item.Item1.DeployedFortId
+                    };
+
+                    this.UIThread(()=> {
+                        ListViewItem thisOne = new ListViewItem(row);
+                        pokemonItem pi;
+                        if (allPokemonItems.TryGetValue(item.Item1.Id, out pi))
+                        {
+                            for (int i = 0; i < pi.lvi.SubItems.Count; i++) {
+                                pi.lvi.SubItems[i] = thisOne.SubItems[i];
+                            }
+                        }
+                        else
+                        {
+                            pi = new pokemonItem();
+                            pi.addedToList = false;
+                            pi.lvi = thisOne;
+                            allPokemonItems.Add(item.Item1.Id, pi);
+                            thisOne.ImageIndex = (int)(item.Item1.PokemonId);
+                            pokemonsIHave[(int)(item.Item1.PokemonId)] = true;
+                            lvis[index] = thisOne;
+                            index++;
+                        }
+                    });
+                  
+                   
                 }
                 Logger.Write($"Adding {lvis.Count()} to list");
                 this.UIThread(() =>
                 {
                     labelPokemonCount.TextLine2 = lvis.Count().ToString();
                 });
-                this.SetList(listPokemon, lvis);
+                this.SetList(listPokemon, lvis, true);
 
                 pokemonsIHave[144] = true;
                 pokemonsIHave[145] = true;
@@ -667,6 +725,7 @@ namespace PoGo.NecroBot.GUI
             catch (Exception ex)
             {
                 Logger.Write($"getPokemon() failed. {ex.Message}", LogLevel.Error);
+                Logger.Write($"getPokemon() failed. {ex.StackTrace}", LogLevel.Error);
             }
         }
 
@@ -1175,7 +1234,7 @@ namespace PoGo.NecroBot.GUI
             //Logger.Write($"Thread: alive: {botThread.IsAlive} with state: {botThread.ThreadState.ToString()}");
             //if (botThread.IsAlive) {
             //    botThread.Abort();
-           // }
+            // }
         }
 
         internal void unpause()

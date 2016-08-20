@@ -271,9 +271,9 @@ namespace PoGo.NecroBot.GUI
 
         private void HandleEvent(HumanWalkingEvent humanWalkingEvent, ISession session)
         {
-            Logger.Write($"Moving like a human in speed {humanWalkingEvent.CurrentWalkingSpeed} km/h | Old Walking Speed {humanWalkingEvent.OldWalkingSpeed}", LogLevel.Debug);
+            Logger.Write($"Moving like a human in speed {humanWalkingEvent.CurrentWalkingSpeed.ToString("0.00")} km/h | Old Walking Speed {humanWalkingEvent.OldWalkingSpeed}", LogLevel.Debug);
             this.gui.UIThread(() => {
-                this.gui.labelSpeed.TextLine2 = $"{humanWalkingEvent.CurrentWalkingSpeed}km/h";
+                this.gui.labelSpeed.TextLine2 = $"{humanWalkingEvent.CurrentWalkingSpeed.ToString("0.00")}km/h";
             });
         }
 
