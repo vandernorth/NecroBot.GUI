@@ -2,6 +2,8 @@
 GUI for the Pokemon Go - Necrobot
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen0.png "Screenshot")
 
+Discord: [https://discord.gg/DFTgkaF](https://discord.gg/DFTgkaF)
+
 ## Information
  - Uses [NecroBot v0.9.0](https://github.com/NoxxDev/NecroBot)
  - Uses [.NET Framework v4.6.2](https://www.microsoft.com/en-us/download/details.aspx?id=51625)

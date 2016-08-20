@@ -280,9 +280,13 @@ namespace PoGo.NecroBot.GUI
         private void HandleEvent(KillSwitchEvent killSwitchEvent, ISession session)
         {
             Logger.Write($"KillSwitch: {killSwitchEvent.Message}. ShouldStop: {killSwitchEvent.RequireStop} ", LogLevel.Warning);
-            this.gui.UIThread(() => {
-                this.gui.pause();
-            });
+            if (killSwitchEvent.RequireStop)
+            {
+                this.gui.UIThread(() =>
+                {
+                    this.gui.pause($"KillSwitch: {killSwitchEvent.Message}.");
+                });
+            }
         }
         
 

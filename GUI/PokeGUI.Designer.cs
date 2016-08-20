@@ -1,4 +1,6 @@
-﻿namespace PoGo.NecroBot.GUI
+﻿using System.Windows.Forms;
+
+namespace PoGo.NecroBot.GUI
 {
     partial class PokeGUI
     {
@@ -126,6 +128,7 @@
             this.textLog = new System.Windows.Forms.RichTextBox();
             this.kryptonWorkspaceCell6 = new ComponentFactory.Krypton.Workspace.KryptonWorkspaceCell();
             this.kryptonPage11 = new ComponentFactory.Krypton.Navigator.KryptonPage();
+            this.btnMapReload = new ComponentFactory.Krypton.Toolkit.ButtonSpecAny();
             this.webMap = new System.Windows.Forms.WebBrowser();
             this.kryptonPage5 = new ComponentFactory.Krypton.Navigator.KryptonPage();
             this.listPokemonStats = new System.Windows.Forms.ListView();
@@ -1173,15 +1176,24 @@
             // kryptonPage11
             // 
             this.kryptonPage11.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
+            this.kryptonPage11.ButtonSpecs.AddRange(new ComponentFactory.Krypton.Toolkit.ButtonSpecAny[] {
+            this.btnMapReload});
             this.kryptonPage11.Controls.Add(this.webMap);
             this.kryptonPage11.Flags = 65534;
             this.kryptonPage11.LastVisibleSet = true;
             this.kryptonPage11.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage11.Name = "kryptonPage11";
-            this.kryptonPage11.Size = new System.Drawing.Size(628, 605);
+            this.kryptonPage11.Size = new System.Drawing.Size(628, 599);
             this.kryptonPage11.Text = "Map";
             this.kryptonPage11.ToolTipTitle = "Page ToolTip";
             this.kryptonPage11.UniqueName = "1EA01AC7DE7B4854EFA1038D0559A4BD";
+            // 
+            // btnMapReload
+            // 
+            this.btnMapReload.Checked = ComponentFactory.Krypton.Toolkit.ButtonCheckState.Checked;
+            this.btnMapReload.Text = "reload";
+            this.btnMapReload.UniqueName = "F9858AEAF8A94D3F4D96ABB8D5497C2E";
+            this.btnMapReload.Click += new System.EventHandler(this.btnMapReload_Click);
             // 
             // webMap
             // 
@@ -1189,8 +1201,9 @@
             this.webMap.Location = new System.Drawing.Point(0, 0);
             this.webMap.MinimumSize = new System.Drawing.Size(20, 20);
             this.webMap.Name = "webMap";
-            this.webMap.Size = new System.Drawing.Size(628, 605);
+            this.webMap.Size = new System.Drawing.Size(628, 599);
             this.webMap.TabIndex = 0;
+            this.webMap.Url = new System.Uri(Application.StartupPath + "/Map/loadingMap.html", System.UriKind.Absolute);
             this.webMap.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webMap_DocumentCompleted);
             // 
             // kryptonPage5
@@ -2174,6 +2187,7 @@
         private System.Windows.Forms.ToolStripMenuItem powerUpMAXToolStripMenuItem;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple16;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton btnHold;
+        private ComponentFactory.Krypton.Toolkit.ButtonSpecAny btnMapReload;
     }
 }
 

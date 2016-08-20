@@ -231,7 +231,7 @@ namespace PoGo.NecroBot.GUI
             });
         }
 
-        private void setLocation(double lang, double lat)
+        private void setLocation(double lng, double lat)
         {
             this.UIThread(() =>
             {
@@ -239,7 +239,7 @@ namespace PoGo.NecroBot.GUI
                 {
                     Object[] objArray = new Object[2];
                     objArray[0] = (Object)lat;
-                    objArray[1] = (Object)lang;
+                    objArray[1] = (Object)lng;
                     this.webMap.Document.InvokeScript("updateMarker", objArray);
                 }
             });
@@ -354,8 +354,9 @@ namespace PoGo.NecroBot.GUI
 
         private void startBotThread(GlobalSettings settings)
         {
-            botThread = new Thread(new ParameterizedThreadStart(botThreadWorker));
-            botThread.Start(settings);
+            //botThread = new Thread(new ParameterizedThreadStart(botThreadWorker));
+            //botThread.Start(settings);
+            botThreadWorker(settings);
         }
 
         private async void botThreadWorker(object settingsObject)
@@ -448,14 +449,14 @@ namespace PoGo.NecroBot.GUI
             {
                 return;
             }
-
-            await machine.AsyncStart(new VersionCheckState(), session);
+            
             string now = DateTime.Now.ToString("yyyyMMddHHmm");
             string filename = $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?date={now}lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
             if (debugMap == true)
             {
                 filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}";
             }
+            Logger.Write("Setting map location to " + filename);
             this.webMap.ScriptErrorsSuppressed = !debugMap;
             this.webMap.Url = new Uri(filename);
 
@@ -471,6 +472,7 @@ namespace PoGo.NecroBot.GUI
             }
 
             settings.checkProxy(session.Translation);
+            await machine.AsyncStart(new VersionCheckState(), session);
         }
         private void onceLoaded()
         {
@@ -1222,12 +1224,15 @@ namespace PoGo.NecroBot.GUI
                 this.unpause();
             }
             else {
-                this.pause();
+                this.pause("");
             }
         }
-        internal void pause()
+        internal void pause(string message)
         {
-            Environment.Exit(1);
+            if (MessageBox.Show(message, "", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+                Environment.Exit(1);
+            }
             //Logger.Write("HOLD! Please restart the program.");
             //isPaused = true;
             //this.UIThread(() => { btnHold.TextLine1 = "Unhold"; });
@@ -1255,6 +1260,12 @@ namespace PoGo.NecroBot.GUI
         private void btnHold_Click(object sender, EventArgs e)
         {
             this.togglePause();
+        }
+
+        private void btnMapReload_Click(object sender, EventArgs e)
+        {
+            btnMapReload.Checked = ButtonCheckState.Checked;
+            webMap.Refresh();
         }
     }
 
