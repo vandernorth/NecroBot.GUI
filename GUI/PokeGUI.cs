@@ -1091,13 +1091,7 @@ namespace PoGo.NecroBot.GUI
                 string name = selected.SubItems[0].Text;
                 ulong id = ulong.Parse(selected.SubItems[10].Text);
                 bool isFavorite = selected.SubItems[21].Text == "Yes";
-                if (isFavorite)
-                {
-                    this.setFavorite(id, !isFavorite);
-                }
-                else {
-                    Logger.Write("New name was empty, not setting it!");
-                }
+                this.setFavorite(id, !isFavorite);
             }
             else {
                 MessageBox.Show($"Unable to favorite multiple pokemon at the same time", $"Sorry...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
