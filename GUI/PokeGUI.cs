@@ -456,7 +456,7 @@ namespace PoGo.NecroBot.GUI
             {
                 filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}";
             }
-            Logger.Write("Setting map location to " + filename);
+            Logger.Write("Setting map location to " + filename, LogLevel.Debug);
             this.webMap.ScriptErrorsSuppressed = !debugMap;
             this.webMap.Url = new Uri(filename);
 
