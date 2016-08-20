@@ -1007,6 +1007,11 @@ namespace PoGo.NecroBot.GUI
             Logger.Write($"POWERUP-MAX {name} run #{i}. Result: {ups.Result}. Stopping.");
             await this.getPokemons();
         }
+
+        private void PokeGUI_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
 

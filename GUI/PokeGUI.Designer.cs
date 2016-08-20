@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PokeGUI));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Tangela", 114);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Tangela", 114);
             this.kryptonManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
             this.kryptonDockingManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
             this.kryptonRibbonGroupButton8 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -796,7 +796,7 @@
             // columnHeader24
             // 
             this.columnHeader24.Text = "Time";
-            this.columnHeader24.Width = 64;
+            this.columnHeader24.Width = 121;
             // 
             // columnHeader23
             // 
@@ -855,7 +855,7 @@
             this.kryptonPage1.LastVisibleSet = true;
             this.kryptonPage1.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage1.Name = "kryptonPage1";
-            this.kryptonPage1.Size = new System.Drawing.Size(956, 273);
+            this.kryptonPage1.Size = new System.Drawing.Size(951, 273);
             this.kryptonPage1.Text = "Transfers";
             this.kryptonPage1.ToolTipTitle = "Page ToolTip";
             this.kryptonPage1.UniqueName = "83BA01CB97A24BFBE8AA146179467030";
@@ -869,7 +869,7 @@
             this.listTransfers.GridLines = true;
             this.listTransfers.Location = new System.Drawing.Point(0, 0);
             this.listTransfers.Name = "listTransfers";
-            this.listTransfers.Size = new System.Drawing.Size(956, 273);
+            this.listTransfers.Size = new System.Drawing.Size(951, 273);
             this.listTransfers.TabIndex = 0;
             this.listTransfers.UseCompatibleStateImageBehavior = false;
             this.listTransfers.View = System.Windows.Forms.View.Details;
@@ -878,7 +878,7 @@
             // columnHeader31
             // 
             this.columnHeader31.Text = "Time";
-            this.columnHeader31.Width = 90;
+            this.columnHeader31.Width = 127;
             // 
             // columnHeader32
             // 
@@ -893,7 +893,7 @@
             this.kryptonPage7.LastVisibleSet = true;
             this.kryptonPage7.MinimumSize = new System.Drawing.Size(50, 50);
             this.kryptonPage7.Name = "kryptonPage7";
-            this.kryptonPage7.Size = new System.Drawing.Size(956, 273);
+            this.kryptonPage7.Size = new System.Drawing.Size(951, 273);
             this.kryptonPage7.Text = "Evolutions";
             this.kryptonPage7.ToolTipTitle = "Page ToolTip";
             this.kryptonPage7.UniqueName = "2AB86471AE434ECA8FA45D5E08C094BA";
@@ -907,7 +907,7 @@
             this.listEvolutions.GridLines = true;
             this.listEvolutions.Location = new System.Drawing.Point(0, 0);
             this.listEvolutions.Name = "listEvolutions";
-            this.listEvolutions.Size = new System.Drawing.Size(956, 273);
+            this.listEvolutions.Size = new System.Drawing.Size(951, 273);
             this.listEvolutions.TabIndex = 0;
             this.listEvolutions.UseCompatibleStateImageBehavior = false;
             this.listEvolutions.View = System.Windows.Forms.View.Details;
@@ -916,7 +916,7 @@
             // columnHeader29
             // 
             this.columnHeader29.Text = "Time";
-            this.columnHeader29.Width = 90;
+            this.columnHeader29.Width = 144;
             // 
             // columnHeader30
             // 
@@ -980,7 +980,7 @@
             // columnHeader20
             // 
             this.columnHeader20.Text = "Time";
-            this.columnHeader20.Width = 88;
+            this.columnHeader20.Width = 129;
             // 
             // columnHeader25
             // 
@@ -1209,9 +1209,9 @@
             // 
             this.listPokemonStats.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listPokemonStats.GridLines = true;
-            listViewItem1.Tag = "114";
+            listViewItem2.Tag = "114";
             this.listPokemonStats.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.listPokemonStats.LargeImageList = this.iamgesPokemon100;
             this.listPokemonStats.Location = new System.Drawing.Point(0, 0);
             this.listPokemonStats.MultiSelect = false;
@@ -1439,6 +1439,7 @@
             this.ribbonMain.RibbonAppButton.AppButtonImage = ((System.Drawing.Image)(resources.GetObject("ribbonMain.RibbonAppButton.AppButtonImage")));
             this.ribbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.ribbonMain.RibbonAppButton.AppButtonText = "Go";
+            this.ribbonMain.RibbonAppButton.AppButtonVisible = false;
             this.ribbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.kryptonRibbonTab2,
             this.kryptonRibbonTab3,
@@ -1929,6 +1930,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Pokemon GO - GUI v{version} - Necrobot v{necrobotversion}";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.PokeGUI_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell4)).EndInit();
             this.kryptonWorkspaceCell4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage8)).EndInit();
