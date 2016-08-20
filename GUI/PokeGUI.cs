@@ -38,6 +38,8 @@ namespace PoGo.NecroBot.GUI
         private ListViewColumnSorter lvwTransfersColumnSorter;
         private ListViewColumnSorter lvwPokestopsColumnSorter;
         private ListViewColumnSorter lvwEvolvesColumnSorter;
+        private Thread botThread;
+        internal StateMachine machine;
         private int pokemonCaught;
         private int pokestopsVisited;
         private bool debugUI;
@@ -338,55 +340,69 @@ namespace PoGo.NecroBot.GUI
                 }
             }
             else {
-                if (settings.ConsoleSettings == null)
-                {
-                    settings.ConsoleSettings = new ConsoleConfig();
-                }
-                settings.ConsoleSettings.TranslationLanguageCode = "non-existing-translation-file-so-we-fallback-on-en";
-
-                if (settings.UpdateSettings == null)
-                {
-                    settings.UpdateSettings = new UpdateConfig();
-                }
-                settings.UpdateSettings.AutoUpdate = false;
-                settings.UpdateSettings.CheckForUpdates = true;
-
-                if (settings.GoogleWalkConfig == null)
-                {
-                    settings.GoogleWalkConfig = new GoogleWalkConfig();
-                }
+                this.startBotThread(settings);
             }
+
+        }
+
+        private void startBotThread(GlobalSettings settings)
+        {
+            botThread = new Thread(new ParameterizedThreadStart(botThreadWorker));
+            botThread.Start(settings);
+        }
+
+        private async void botThreadWorker(object settingsObject)
+        {
+            var settings = (GlobalSettings)settingsObject;
+            if (settings.ConsoleSettings == null)
+            {
+                settings.ConsoleSettings = new ConsoleConfig();
+            }
+            settings.ConsoleSettings.TranslationLanguageCode = "non-existing-translation-file-so-we-fallback-on-en";
+
+            if (settings.UpdateSettings == null)
+            {
+                settings.UpdateSettings = new UpdateConfig();
+            }
+            settings.UpdateSettings.AutoUpdate = false;
+            settings.UpdateSettings.CheckForUpdates = true;
+
+            if (settings.GoogleWalkConfig == null)
+            {
+                settings.GoogleWalkConfig = new GoogleWalkConfig();
+            }
+
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             _session = session;
             session.Client.ApiFailure = new ApiFailureStrategy(session);
 
-            var machine = new StateMachine();
+            this.machine = new StateMachine();
             var stats = new Statistics();
 
             stats.DirtyEvent += () =>
-            {
-                this.UIThread(delegate
                 {
-                    this.labelAccount.TextLine2 = stats.GetTemplatedStats("{0}", "");
-                    this.labelRuntime.TextLine2 = stats.GetTemplatedStats("{1}", "");
-                    this.labelXpH.TextLine2 = stats.GetTemplatedStats("{3:0.0}", "");
-                    this.labelPH.TextLine2 = stats.GetTemplatedStats("{4:0.0}", "");
-                    this.labelStardust.TextLine2 = stats.GetTemplatedStats("{5:n0}", "");
-                    this.labelTransferred.TextLine2 = stats.GetTemplatedStats("{6}", "");
-                    this.labelRecycledCount.TextLine2 = stats.GetTemplatedStats("{7}", "");
+                    this.UIThread(delegate
+                    {
+                        this.labelAccount.TextLine2 = stats.GetTemplatedStats("{0}", "");
+                        this.labelRuntime.TextLine2 = stats.GetTemplatedStats("{1}", "");
+                        this.labelXpH.TextLine2 = stats.GetTemplatedStats("{3:0.0}", "");
+                        this.labelPH.TextLine2 = stats.GetTemplatedStats("{4:0.0}", "");
+                        this.labelStardust.TextLine2 = stats.GetTemplatedStats("{5:n0}", "");
+                        this.labelTransferred.TextLine2 = stats.GetTemplatedStats("{6}", "");
+                        this.labelRecycledCount.TextLine2 = stats.GetTemplatedStats("{7}", "");
 
-                    this.labelLevel.TextLine2 = stats.GetTemplatedStats("{2}", "{0}");
-                    this.labelNextLevel.TextLine2 = stats.GetTemplatedStats("{2}", "{1}h {2}m");
-                    this.labelXp.TextLine2 = stats.GetTemplatedStats("{2}", "{3:n0}/{4:n0}");
-                    this.labelSpeed.TextLine2 = this._session.LogicSettings.WalkingSpeedInKilometerPerHour + "km/h";
-                });
-            };
+                        this.labelLevel.TextLine2 = stats.GetTemplatedStats("{2}", "{0}");
+                        this.labelNextLevel.TextLine2 = stats.GetTemplatedStats("{2}", "{1}h {2}m");
+                        this.labelXp.TextLine2 = stats.GetTemplatedStats("{2}", "{3:n0}/{4:n0}");
+                        this.labelSpeed.TextLine2 = this._session.LogicSettings.WalkingSpeedInKilometerPerHour + "km/h";
+                    });
+                };
 
             var aggregator = new StatisticsAggregator(stats);
             var listener = new EventListener(this);
             session.EventDispatcher.EventReceived += (IEvent evt) => listener.Listen(evt, session);
             session.EventDispatcher.EventReceived += (IEvent evt) => aggregator.Listen(evt, session);
-            machine.SetFailureState(new LoginState());
+            this.machine.SetFailureState(new LoginState());
             Logger.SetLoggerContext(session);
 
 
@@ -426,7 +442,7 @@ namespace PoGo.NecroBot.GUI
                 return;
             }
 
-            machine.AsyncStart(new VersionCheckState(), session);
+            await machine.AsyncStart(new VersionCheckState(), session);
             string now = DateTime.Now.ToString("yyyyMMddHHmm");
             string filename = $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?date={now}lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
             if (debugMap == true)
@@ -443,13 +459,12 @@ namespace PoGo.NecroBot.GUI
 
             if (session.LogicSettings.UseSnipeLocationServer)
             {
-                SnipePokemonTask.AsyncStart(session);
+                await SnipePokemonTask.AsyncStart(session);
                 this.snipeStarted = true;
             }
 
             settings.checkProxy(session.Translation);
         }
-
         private void onceLoaded()
         {
             this.runUpdate();
@@ -1144,6 +1159,49 @@ namespace PoGo.NecroBot.GUI
             {
                 Logger.Write($"maxPowerUp() failed. {ex.Message}", LogLevel.Error);
             }
+        }
+
+        private bool isPaused;
+        internal void togglePause()
+        {
+            if (isPaused == true)
+            {
+                this.unpause();
+            }
+            else {
+                this.pause();
+            }
+        }
+        internal void pause()
+        {
+            Environment.Exit(1);
+            //Logger.Write("HOLD! Please restart the program.");
+            //isPaused = true;
+            //this.UIThread(() => { btnHold.TextLine1 = "Unhold"; });
+            //Logger.Write($"Thread: alive: {botThread.IsAlive} with state: {botThread.ThreadState.ToString()}");
+            //if (botThread.IsAlive) {
+            //    botThread.Abort();
+           // }
+        }
+
+        internal void unpause()
+        {/*
+            if (isPaused == false)
+            {
+                Logger.Write("Continuing..");
+                isPaused = false;
+                this.UIThread(() => { btnHold.TextLine1 = "Hold"; });
+                //waitHandle.Set();
+                botThread.Resume();
+            }
+            else {
+                Logger.Write("Not held up...");
+            }*/
+        }
+
+        private void btnHold_Click(object sender, EventArgs e)
+        {
+            this.togglePause();
         }
     }
 

@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PokeGUI));
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Tangela", 114);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Tangela", 114);
             this.kryptonManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
             this.kryptonDockingManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
             this.kryptonRibbonGroupButton8 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -193,6 +193,8 @@
             this.snipeButton = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.useIncenseButton = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.useLuckyEgg = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupTriple16 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.btnHold = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonTab5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.kryptonRibbonTab1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.kryptonRibbonGroup1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
@@ -589,7 +591,6 @@
             this.addStatisticsPageToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.addStatisticsPageToolStripMenuItem.Text = "Add statistics page";
             this.addStatisticsPageToolStripMenuItem.Visible = false;
-            this.addStatisticsPageToolStripMenuItem.Click += new System.EventHandler(this.addStatisticsPageToolStripMenuItem_Click);
             // 
             // favoriteToolStripMenuItem
             // 
@@ -1209,9 +1210,9 @@
             // 
             this.listPokemonStats.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listPokemonStats.GridLines = true;
-            listViewItem2.Tag = "114";
+            listViewItem1.Tag = "114";
             this.listPokemonStats.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
+            listViewItem1});
             this.listPokemonStats.LargeImageList = this.iamgesPokemon100;
             this.listPokemonStats.Location = new System.Drawing.Point(0, 0);
             this.listPokemonStats.MultiSelect = false;
@@ -1467,7 +1468,6 @@
             this.kryptonRibbonGroupTriple5,
             this.kryptonRibbonGroupTriple6});
             this.kryptonRibbonGroup5.TextLine1 = "Levels";
-            this.kryptonRibbonGroup5.DialogBoxLauncherClick += new System.EventHandler(this.kryptonRibbonGroup5_DialogBoxLauncherClick);
             // 
             // kryptonRibbonGroupTriple5
             // 
@@ -1790,7 +1790,8 @@
             // 
             this.kryptonRibbonGroup6.DialogBoxLauncher = false;
             this.kryptonRibbonGroup6.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupTriple11});
+            this.kryptonRibbonGroupTriple11,
+            this.kryptonRibbonGroupTriple16});
             this.kryptonRibbonGroup6.TextLine1 = "Actions";
             // 
             // kryptonRibbonGroupTriple11
@@ -1821,6 +1822,18 @@
             this.useLuckyEgg.TextLine1 = "Use ";
             this.useLuckyEgg.TextLine2 = "Lucky egg";
             this.useLuckyEgg.Click += new System.EventHandler(this.useLuckyEgg_Click);
+            // 
+            // kryptonRibbonGroupTriple16
+            // 
+            this.kryptonRibbonGroupTriple16.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.btnHold});
+            // 
+            // btnHold
+            // 
+            this.btnHold.ImageLarge = ((System.Drawing.Image)(resources.GetObject("btnHold.ImageLarge")));
+            this.btnHold.TextLine1 = "Hold";
+            this.btnHold.Visible = false;
+            this.btnHold.Click += new System.EventHandler(this.btnHold_Click);
             // 
             // kryptonRibbonTab5
             // 
@@ -1930,7 +1943,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Pokemon GO - GUI v{version} - Necrobot v{necrobotversion}";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.PokeGUI_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell4)).EndInit();
             this.kryptonWorkspaceCell4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage8)).EndInit();
@@ -2160,6 +2172,8 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton useLuckyEgg;
         private System.Windows.Forms.ToolStripMenuItem favoriteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem powerUpMAXToolStripMenuItem;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple16;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton btnHold;
     }
 }
 
