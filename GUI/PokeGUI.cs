@@ -10,6 +10,7 @@ using PoGo.NecroBot.Logic.PoGoUtils;
 using PoGo.NecroBot.Logic.State;
 using PoGo.NecroBot.Logic.Tasks;
 using PoGo.NecroBot.Logic.Utils;
+using PoGo.NecroBot.Logic.Model.Settings;
 using POGOProtos.Map.Fort;
 using POGOProtos.Networking.Responses;
 using POGOProtos.Inventory.Item;
@@ -319,7 +320,19 @@ namespace PoGo.NecroBot.GUI
                 {
                     settings.ConsoleSettings = new ConsoleConfig();
                 }
-                settings.ConsoleSettings.TranslationLanguageCode = "en";
+                settings.ConsoleSettings.TranslationLanguageCode = "non-existing-translation-file-so-we-fallback-on-en";
+
+                if (settings.UpdateSettings == null)
+                {
+                    settings.UpdateSettings = new UpdateConfig();
+                }
+                settings.UpdateSettings.AutoUpdate = false;
+                settings.UpdateSettings.CheckForUpdates = true;
+
+                if (settings.GoogleWalkConfig == null)
+                {
+                    settings.GoogleWalkConfig = new GoogleWalkConfig();
+                }
             }
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             _session = session;
@@ -354,7 +367,8 @@ namespace PoGo.NecroBot.GUI
             machine.SetFailureState(new LoginState());
             Logger.SetLoggerContext(session);
 
-            session.Navigation.UpdatePositionEvent += (lat, lng) => {
+           
+            session.Navigation.WalkStrategy.UpdatePositionEvent += (lat, lng) => {
                 session.EventDispatcher.Send(new UpdatePositionEvent { Latitude = lat, Longitude = lng });
                 this.UIThread(delegate
                 {
