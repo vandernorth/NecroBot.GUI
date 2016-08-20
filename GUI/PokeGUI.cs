@@ -451,7 +451,7 @@ namespace PoGo.NecroBot.GUI
             }
             
             string now = DateTime.Now.ToString("yyyyMMddHHmm");
-            string filename = $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?date={now}lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
+            string filename = $"http://rawgit.com/vandernorth/NecroBot.GUI/master/Map/getMap.html?date={now}&lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}&version={this.version}";
             if (debugMap == true)
             {
                 filename = Application.StartupPath + $"\\Map\\getMap.html?lat={settings.LocationSettings.DefaultLatitude}&long={settings.LocationSettings.DefaultLongitude}&radius={settings.LocationSettings.MaxTravelDistanceInMeters}";
