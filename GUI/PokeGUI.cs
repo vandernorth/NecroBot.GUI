@@ -611,6 +611,7 @@ namespace PoGo.NecroBot.GUI
             public bool addedToList;
         }
         private Dictionary<ulong, pokemonItem> allPokemonItems;
+        private Dictionary<ListViewItem, bool> deletedPokemon;
         private async Task getPokemons()
         {
             try
@@ -618,6 +619,7 @@ namespace PoGo.NecroBot.GUI
                 if (allPokemonItems == null) {
                     allPokemonItems = new Dictionary<ulong, pokemonItem>();
                 }
+                deletedPokemon = allPokemonItems.ToDictionary(pi => pi.Value.lvi, pi => true);
                 var items = await this._session.Inventory.GetPokemons();
                 var myPokemonSettings = await this._session.Inventory.GetPokemonSettings();
                 var pokemonSettings = myPokemonSettings.ToList();
@@ -693,6 +695,7 @@ namespace PoGo.NecroBot.GUI
                             for (int i = 0; i < pi.lvi.SubItems.Count; i++) {
                                 pi.lvi.SubItems[i] = thisOne.SubItems[i];
                             }
+                            deletedPokemon.Remove(pi.lvi);
                         }
                         else
                         {
@@ -715,12 +718,15 @@ namespace PoGo.NecroBot.GUI
                     labelPokemonCount.TextLine2 = lvis.Count().ToString();
                 });
                 this.SetList(listPokemon, lvis, true);
-
-                pokemonsIHave[144] = true;
-                pokemonsIHave[145] = true;
-                pokemonsIHave[146] = true;
+                
                 this.UIThread(() =>
                 {
+                    //== Remove removed
+                    foreach (var removed in deletedPokemon) {
+                        removed.Key.Remove();
+                    }
+
+                    //== Pokestats / pokemonIHave
                     this.listPokemonStats.Clear();
                     for (int i = 1; i < 149; i++)
                     {
