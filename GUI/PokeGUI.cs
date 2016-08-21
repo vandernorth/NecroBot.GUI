@@ -33,6 +33,7 @@ namespace PoGo.NecroBot.GUI
     {
         private DragManager _dm;
         private bool mapLoaded;
+        private DateTime start;
         private Session _session;
         private ListViewColumnSorter lvwColumnSorter;
         private ListViewColumnSorter lvwCatchesColumnSorter;
@@ -54,6 +55,7 @@ namespace PoGo.NecroBot.GUI
         {
             try
             {
+                this.start = DateTime.Now;
                 this.isDebug = isDebug;
                 this.mapLoaded = false;
                 this.debugUI = false;
@@ -174,6 +176,9 @@ namespace PoGo.NecroBot.GUI
             {
                 this.listPokestops.Items.Add(new ListViewItem(row));
                 this.listPokestops.Sort();
+                TimeSpan runtime = DateTime.Now - this.start;
+                double hours = runtime.Hours + ((double)runtime.Minutes / 60.0);
+                labelPokestopsPH.TextLine2 = ((double)this.pokestopsVisited / hours).ToString("0.00");
             });
             this.updateInventory();
         }
@@ -391,7 +396,11 @@ namespace PoGo.NecroBot.GUI
             {
                 settings.GoogleWalkConfig = new GoogleWalkConfig();
             }
-
+            if (settings.KillSwitchSettings == null)
+            {
+                settings.KillSwitchSettings = new KillSwitchSettings();
+            }
+            
             var session = new Session(new ClientSettings(settings), new LogicSettings(settings));
             _session = session;
             session.Client.ApiFailure = new ApiFailureStrategy(session);

@@ -32,7 +32,7 @@ namespace PoGo.NecroBot.GUI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PokeGUI));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Tangela", 114);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Tangela", 114);
             this.kryptonManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
             this.kryptonDockingManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
             this.kryptonRibbonGroupButton8 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -152,6 +152,7 @@ namespace PoGo.NecroBot.GUI
             this.kryptonRibbonGroupTriple7 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.labelAccount = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.labelRuntime = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.labelPokestopsPH = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupTriple8 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.labelSpeed = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.labelLat = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -1203,7 +1204,8 @@ namespace PoGo.NecroBot.GUI
             this.webMap.Name = "webMap";
             this.webMap.Size = new System.Drawing.Size(628, 599);
             this.webMap.TabIndex = 0;
-            this.webMap.Url = new System.Uri(Application.StartupPath + "/Map/loadingMap.html", System.UriKind.Absolute);
+            this.webMap.Url = new System.Uri("C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\Common7\\IDE/Map/loadingMap.ht" +
+        "ml", System.UriKind.Absolute);
             this.webMap.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webMap_DocumentCompleted);
             // 
             // kryptonPage5
@@ -1223,9 +1225,9 @@ namespace PoGo.NecroBot.GUI
             // 
             this.listPokemonStats.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listPokemonStats.GridLines = true;
-            listViewItem1.Tag = "114";
+            listViewItem2.Tag = "114";
             this.listPokemonStats.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.listPokemonStats.LargeImageList = this.iamgesPokemon100;
             this.listPokemonStats.Location = new System.Drawing.Point(0, 0);
             this.listPokemonStats.MultiSelect = false;
@@ -1547,7 +1549,8 @@ namespace PoGo.NecroBot.GUI
             // 
             this.kryptonRibbonGroupTriple7.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.labelAccount,
-            this.labelRuntime});
+            this.labelRuntime,
+            this.labelPokestopsPH});
             this.kryptonRibbonGroupTriple7.MaximumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Medium;
             // 
             // labelAccount
@@ -1561,6 +1564,13 @@ namespace PoGo.NecroBot.GUI
             this.labelRuntime.ImageSmall = ((System.Drawing.Image)(resources.GetObject("labelRuntime.ImageSmall")));
             this.labelRuntime.TextLine1 = "Runtime";
             this.labelRuntime.TextLine2 = "00:00";
+            // 
+            // labelPokestopsPH
+            // 
+            this.labelPokestopsPH.ImageLarge = ((System.Drawing.Image)(resources.GetObject("labelPokestopsPH.ImageLarge")));
+            this.labelPokestopsPH.ImageSmall = ((System.Drawing.Image)(resources.GetObject("labelPokestopsPH.ImageSmall")));
+            this.labelPokestopsPH.TextLine1 = "Pokestop p/h: ";
+            this.labelPokestopsPH.TextLine2 = "0";
             // 
             // kryptonRibbonGroupTriple8
             // 
@@ -2188,6 +2198,7 @@ namespace PoGo.NecroBot.GUI
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple16;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton btnHold;
         private ComponentFactory.Krypton.Toolkit.ButtonSpecAny btnMapReload;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton labelPokestopsPH;
     }
 }
 
