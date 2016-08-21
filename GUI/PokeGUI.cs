@@ -168,7 +168,7 @@ namespace PoGo.NecroBot.GUI
                 }
             });
         }
-        public void addPokestopVisited(string[] row)
+        public void addPokestopVisited(string[] row, FortUsedEvent fortUsedEvent)
         {
             this.pokestopsVisited++;
             this.updateStatusCounters();
@@ -179,6 +179,8 @@ namespace PoGo.NecroBot.GUI
                 TimeSpan runtime = DateTime.Now - this.start;
                 double hours = runtime.Hours + ((double)runtime.Minutes / 60.0);
                 labelPokestopsPH.TextLine2 = ((double)this.pokestopsVisited / hours).ToString("0.00");
+
+                this.setFort("Checkpoint",fortUsedEvent.Id, fortUsedEvent.Longitude.ToString(), fortUsedEvent.Latitude.ToString(), fortUsedEvent.Name,"");
             });
             this.updateInventory();
         }
@@ -535,7 +537,6 @@ namespace PoGo.NecroBot.GUI
         {
             try
             {
-
                 var mapObjects = await this._session.Client.Map.GetMapObjects();
 
                 // Wasn't sure how to make this pretty. Edit as needed.
