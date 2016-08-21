@@ -385,7 +385,7 @@ namespace PoGo.NecroBot.GUI
                 settings.UpdateSettings = new UpdateConfig();
             }
             settings.UpdateSettings.AutoUpdate = false;
-            settings.UpdateSettings.CheckForUpdates = true;
+            settings.UpdateSettings.CheckForUpdates = false;
 
             if (settings.GoogleWalkConfig == null)
             {
