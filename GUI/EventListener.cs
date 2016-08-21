@@ -24,6 +24,11 @@ namespace PoGo.NecroBot.GUI
                 evt.Profile.PlayerData.Username ?? ""));
         }
 
+        public void HandleEvent(UnaccurateLocation evt, ISession session)
+        {
+            Logger.Write($"[UnaccurateLocation] {evt.Latitude} / {evt.Longitude}", LogLevel.Debug);
+        }
+
         public void HandleEvent(ErrorEvent evt, ISession session)
         {
             Logger.Write(evt.ToString(), LogLevel.Error);

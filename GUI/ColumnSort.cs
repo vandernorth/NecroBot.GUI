@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoGo.NecroBot.Logic.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -46,33 +47,40 @@ public class ListViewColumnSorter : IComparer
     /// <returns>The result of the comparison. "0" if equal, negative if 'x' is less than 'y' and positive if 'x' is greater than 'y'</returns>
     public int Compare(object x, object y)
     {
-        int compareResult;
-        ListViewItem listviewX, listviewY;
-
-        // Cast the objects to be compared to ListViewItem objects
-        listviewX = (ListViewItem)x;
-        listviewY = (ListViewItem)y;
-
-        // Compare the two items
-        string a = listviewX.SubItems[ColumnToSort].Text;
-        string b = listviewY.SubItems[ColumnToSort].Text;
-        compareResult = (new StringNum(a).CompareTo(new StringNum(b)));
-        //compareResult = ObjectCompare.Compare(, listviewY.SubItems[ColumnToSort].Text);
-
-        // Calculate correct return value based on object comparison
-        if (OrderOfSort == SortOrder.Ascending)
+        try
         {
-            // Ascending sort is selected, return normal result of compare operation
-            return compareResult;
+            int compareResult;
+            ListViewItem listviewX, listviewY;
+
+            // Cast the objects to be compared to ListViewItem objects
+            listviewX = (ListViewItem)x;
+            listviewY = (ListViewItem)y;
+
+            // Compare the two items
+            string a = listviewX.SubItems[ColumnToSort].Text;
+            string b = listviewY.SubItems[ColumnToSort].Text;
+            compareResult = (new StringNum(a).CompareTo(new StringNum(b)));
+            //compareResult = ObjectCompare.Compare(, listviewY.SubItems[ColumnToSort].Text);
+
+            // Calculate correct return value based on object comparison
+            if (OrderOfSort == SortOrder.Ascending)
+            {
+                // Ascending sort is selected, return normal result of compare operation
+                return compareResult;
+            }
+            else if (OrderOfSort == SortOrder.Descending)
+            {
+                // Descending sort is selected, return negative result of compare operation
+                return (-compareResult);
+            }
+            else
+            {
+                // Return '0' to indicate they are equal
+                return 0;
+            }
         }
-        else if (OrderOfSort == SortOrder.Descending)
-        {
-            // Descending sort is selected, return negative result of compare operation
-            return (-compareResult);
-        }
-        else
-        {
-            // Return '0' to indicate they are equal
+        catch (Exception ex) {
+            Logger.Write("Unable to sort. " + ex.Message, LogLevel.Warning);
             return 0;
         }
     }

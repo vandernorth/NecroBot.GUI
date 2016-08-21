@@ -46,21 +46,29 @@ namespace PoGo.NecroBot.GUI
         private bool debugUI;
         private bool debugLogs;
         private bool debugMap;
+        private bool isDebug;
         private bool snipeStarted;
         private string version;
 
-        public PokeGUI()
+        public PokeGUI(bool isDebug)
         {
-            this.mapLoaded = false;
-            this.debugUI = false;
-            this.debugLogs = false;
-            this.snipeStarted = false;
-            this.debugMap = false;
-            this.pokemonCaught = 0;
-            this.pokestopsVisited = 0;
-            InitializeComponent();
-            doComponentSettings();
-            startUp();
+            try
+            {
+                this.isDebug = isDebug;
+                this.mapLoaded = false;
+                this.debugUI = false;
+                this.debugLogs = false;
+                this.snipeStarted = false;
+                this.debugMap = false;
+                this.pokemonCaught = 0;
+                this.pokestopsVisited = 0;
+                InitializeComponent();
+                doComponentSettings();
+                startUp();
+            }
+            catch (Exception ex) {
+                MessageBox.Show($"Error. {ex.Message}\nStack: {ex.StackTrace}", ex.Message, MessageBoxButtons.AbortRetryIgnore,MessageBoxIcon.Error);
+            }
         }
 
         private void doComponentSettings()
@@ -328,6 +336,10 @@ namespace PoGo.NecroBot.GUI
                 {
                     this.SetText($"[{now}] ({level.ToString()}) {message}", color);
                 }
+
+                if (isDebug) {
+                    Console.WriteLine($"[{now}] ({level.ToString()}) {message}");
+                }
             };
             Logger.SetLogger(new EventLogger(LogLevel.Info, writes), "");
         }
@@ -465,14 +477,16 @@ namespace PoGo.NecroBot.GUI
                 session.Telegram = new Logic.Service.TelegramService(settings.TelegramSettings.TelegramAPIKey, session);
             }
 
+            settings.checkProxy(session.Translation);
+            await machine.AsyncStart(new VersionCheckState(), session);
+
             if (session.LogicSettings.UseSnipeLocationServer)
             {
                 await SnipePokemonTask.AsyncStart(session);
                 this.snipeStarted = true;
             }
 
-            settings.checkProxy(session.Translation);
-            await machine.AsyncStart(new VersionCheckState(), session);
+            
         }
         private void onceLoaded()
         {

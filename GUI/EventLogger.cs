@@ -82,7 +82,6 @@ namespace PoGo.NecroBot.GUI
                     color = Color.White;
                     break;
             }
-
             _writer(message, level, color);
         }
 
