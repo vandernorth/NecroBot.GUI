@@ -1,3 +1,5 @@
+# This repository is no longer actively maintained. 
+
 # NecroBot.GUI
 GUI for the Pokemon Go - Necrobot
 ![Screenshot](https://raw.githubusercontent.com/vandernorth/NecroBot.GUI/master/Screenshots/screen0.png "Screenshot")
